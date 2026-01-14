@@ -31,7 +31,9 @@ public class LubanTestHelper : IDisposable
     private void Initialize()
     {
         if (_initialized)
+        {
             return;
+        }
 
         try
         {
@@ -116,7 +118,9 @@ public class LubanTestHelper : IDisposable
         var files = new List<string>();
 
         if (!Directory.Exists(OutputDirectory))
+        {
             return files;
+        }
 
         files.AddRange(Directory.GetFiles(OutputDirectory, pattern, SearchOption.AllDirectories));
         return files;
@@ -133,7 +137,9 @@ public class LubanTestHelper : IDisposable
     public void Dispose()
     {
         if (_disposed)
+        {
             return;
+        }
 
         _tempDirManager?.Dispose();
         _disposed = true;

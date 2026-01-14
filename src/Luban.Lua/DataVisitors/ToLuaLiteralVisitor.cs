@@ -49,6 +49,7 @@ public class ToLuaLiteralVisitor : ToLiteralVisitorBase
         }
 
         int index = 0;
+        bool firstField = true;
         foreach (var f in type.Fields)
         {
             var defField = (DefField)type.ImplType.HierarchyFields[index++];
@@ -56,9 +57,26 @@ public class ToLuaLiteralVisitor : ToLiteralVisitorBase
             {
                 continue;
             }
+
+            if (!firstField)
+            {
+                x.Append(',');
+            }
+            firstField = false;
+
             x.Append(defField.Name).Append('=');
-            x.Append(f.Apply(this));
-            x.Append(',');
+
+            var fieldValue = f.Apply(this);
+            if (defField.HasTag("ObjectFactory"))
+            {
+                // Remove trailing comma if present (for bean values)
+                var factoryValue = fieldValue.TrimEnd(',');
+                x.Append("function() return ").Append(factoryValue).Append(" end");
+            }
+            else
+            {
+                x.Append(fieldValue);
+            }
         }
         x.Append('}');
         return x.ToString();

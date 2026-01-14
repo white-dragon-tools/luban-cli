@@ -148,10 +148,22 @@ public class DefEnum : DefTypeBase
         // Detect if this is a string enum by checking if any item has a non-numeric value
         IsStringEnum = Items.Any(item =>
         {
-            if (string.IsNullOrEmpty(item.Value)) return false;
+            if (string.IsNullOrEmpty(item.Value))
+            {
+                return false;
+            }
+
             string value = item.Value.ToLower();
-            if (int.TryParse(item.Value, out _)) return false;
-            if (value.StartsWith("0x")) return false;
+            if (int.TryParse(item.Value, out _))
+            {
+                return false;
+            }
+
+            if (value.StartsWith("0x"))
+            {
+                return false;
+            }
+
             return true;
         });
 

@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "Fireball",
+    "effect": {
+      "damage": 100,
+      "duration": 3.0
+    }
+  },
+  {
+    "id": 2,
+    "name": "IceShield",
+    "effect": {
+      "damage": 50,
+      "duration": 5.0
+    }
+  }
+]

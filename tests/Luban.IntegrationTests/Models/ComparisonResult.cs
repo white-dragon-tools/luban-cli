@@ -77,10 +77,14 @@ public class ComparisonResult
     public string GetFormattedMessage()
     {
         if (IsMatch)
+        {
             return $"Files match: {ExpectedFile}";
+        }
 
         if (!string.IsNullOrEmpty(ErrorMessage))
+        {
             return $"Comparison error: {ErrorMessage}";
+        }
 
         var message = $"Files do not match:\nExpected: {ExpectedFile}\nActual: {ActualFile}\n\nDifferences:\n";
         message += string.Join("\n", Differences);

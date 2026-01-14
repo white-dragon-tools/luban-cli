@@ -38,7 +38,9 @@ public class TempDirectoryManager : IDisposable
     public void Cleanup()
     {
         if (_disposed)
+        {
             return;
+        }
 
         try
         {
@@ -56,7 +58,9 @@ public class TempDirectoryManager : IDisposable
     public void Dispose()
     {
         if (_disposed)
+        {
             return;
+        }
 
         Cleanup();
         _disposed = true;
