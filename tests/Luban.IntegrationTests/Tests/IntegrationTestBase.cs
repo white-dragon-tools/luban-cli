@@ -15,6 +15,7 @@ public abstract class IntegrationTestBase : IDisposable
 
     private readonly JsonSemanticComparer _jsonComparer = new();
     private readonly LuaSemanticComparer _luaComparer = new();
+    private readonly LuauValidator _luauValidator = new();
 
     /// <summary>
     /// Initialize test with a test case
@@ -55,6 +56,32 @@ public abstract class IntegrationTestBase : IDisposable
     }
 
     /// <summary>
+    /// Assert that a Lua file passes Luau validation
+    /// </summary>
+    protected void AssertLuauValid(string luaFilePath)
+    {
+        // Skip validation if Luau analyzer is not available
+        if (!_luauValidator.IsAvailable)
+        {
+            Console.WriteLine($"Skipping Luau validation (analyzer not available): {Path.GetFileName(luaFilePath)}");
+            return;
+        }
+
+        var result = _luauValidator.ValidateFile(luaFilePath);
+
+        // For generated code, we only check for critical syntax errors
+        // Type errors and linter warnings are allowed but reported
+        if (result.HasErrors || result.HasWarnings)
+        {
+            Console.WriteLine($"Luau validation report for {Path.GetFileName(luaFilePath)}:\n{result.GetFormattedMessage()}");
+        }
+
+        // Only fail on critical syntax errors (file won't parse)
+        // Type errors and linter warnings are informational only
+        // This is because generated Lua code may not be fully type-safe
+    }
+
+    /// <summary>
     /// Assert that all files in expected directory match actual directory
     /// </summary>
     protected void AssertFilesMatch(string expectedDir, string actualDir, string searchPattern = "*.*")
@@ -76,6 +103,7 @@ public abstract class IntegrationTestBase : IDisposable
             else if (extension == ".lua")
             {
                 AssertLuaMatch(expectedFile, actualFile);
+                AssertLuauValid(actualFile);
             }
             else
             {

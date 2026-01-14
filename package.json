@@ -11,7 +11,10 @@
     "test:watch": "cd tests/Luban.IntegrationTests && dotnet watch test",
     "build:test": "npm run build && npm run test",
     "format": "cd src && dotnet format --severity error -v n",
-    "clean": "cd src && dotnet clean Luban.sln && cd ../tests/Luban.IntegrationTests && dotnet clean"
+    "clean": "cd src && dotnet clean Luban.sln && cd ../tests/Luban.IntegrationTests && dotnet clean",
+    "luau:install": "scripts/install-luau.bat",
+    "luau:check": "luau-analyze tests/Luban.IntegrationTests/TestData/*/expected/lua/*.lua",
+    "luau:check:strict": "luau-analyze --typechecking-mode=strict tests/Luban.IntegrationTests/TestData/*/expected/lua/*.lua"
   },
   "keywords": ["luban", "game", "configuration", "code-generation"],
   "author": "",

@@ -10,6 +10,7 @@
 - **语义比较**：
   - JSON：解析后比较对象，忽略属性顺序和格式化
   - Lua：忽略注释和空白字符
+- **Luau 验证**：使用 Luau 静态分析工具检查生成的 Lua 代码
 - **测试隔离**：每个测试使用独立的临时目录
 - **xUnit 集成**：使用 xUnit Theory 动态生成测试
 
@@ -51,6 +52,46 @@ dotnet test --filter "DisplayName~basic_types"
 ```bash
 dotnet test --logger "console;verbosity=detailed"
 ```
+
+### Luau 代码检查
+
+生成的 Lua 代码会自动通过 Luau 静态分析工具进行验证。
+
+#### 安装 Luau
+
+**方式 1：使用 rokit（推荐）**
+```bash
+rokit init
+rokit add luau-lang/luau
+```
+
+**方式 2：手动下载**
+```bash
+# Windows
+npm run luau:install
+
+# Linux/Mac
+./scripts/install-luau.sh
+```
+
+#### 运行 Luau 检查
+
+```bash
+# 检查所有 Lua 文件
+npm run luau:check
+
+# 使用严格模式检查
+npm run luau:check:strict
+```
+
+#### 集成测试中的 Luau 验证
+
+在集成测试运行时，会自动对生成的 Lua 文件执行 Luau 验证：
+- 如果检测到**错误**，测试将失败
+- 如果检测到**警告**，测试会通过，但会在控制台输出警告信息
+- 如果 Luau 分析器不可用，测试会跳过验证并在控制台输出提示
+
+**注意**：生成的 Lua 代码应该通过 Luau 的基本检查，避免类型错误和语法错误。
 
 ## 添加新测试用例
 

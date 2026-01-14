@@ -1,13 +1,14 @@
 local setmetatable = setmetatable
 local pairs = pairs
-local ipairs = ipairs
+-- local ipairs = ipairs  -- Not used, commented out to satisfy Luau linter
 local tinsert = table.insert
 
 local function SimpleClass()
     local class = {}
     class.__index = class
     class.New = function(...)
-        local ctor = class.ctor
+        -- Use rawget to safely check for ctor without triggering Luau type error
+        local ctor = rawget(class, 'ctor')
         local o = ctor and ctor(...) or {}
         setmetatable(o, class)
         return o
@@ -63,23 +64,25 @@ local function InitTypes(methods)
 
     local readString = methods.readString
 
-    local function readList(bs, keyFun)
-        local list = {}
-        local v
-        for i = 1, readSize(bs) do
-            tinsert(list, keyFun(bs))
-        end
+local function readList(bs, keyFun)
+    local list = {}
+    for i =1, readSize(bs) do
+        tinsert(list, keyFun(bs))
+    end
+    return list
+end
         return list
     end
 
     local readArray = readList
 
-    local function readSet(bs, keyFun)
-        local set = {}
-        local v
-        for i = 1, readSize(bs) do
-            tinsert(set, keyFun(bs))
-        end
+local function readSet(bs, keyFun)
+    local set = {}
+    for i =1, readSize(bs) do
+        tinsert(set, keyFun(bs))
+    end
+    return set
+end
         return set
     end
 
@@ -93,11 +96,13 @@ local function InitTypes(methods)
         return map
     end
 
-    local function readNullableBool(bs)
-        if readBool(bs) then
-            return readBool(bs)
-        end
+local function readNullableBool(bs)
+    if readBool(bs) then
+        return readBool(bs)
+    else
+        return nil
     end
+end
 
     local beans = {}
     {{~ for bean in __beans ~}}
