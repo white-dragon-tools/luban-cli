@@ -1,0 +1,4 @@
+[
+  {"id": 1, "name": "Sword", "price": 99.99, "enabled": true},
+  {"id": 2, "name": "Shield", "price": 149.5, "enabled": false}
+]

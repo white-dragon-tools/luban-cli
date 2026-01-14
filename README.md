@@ -1,49 +1,43 @@
+本项目基于 `luban v4.5 (0203b7a)` 开发,
 
-- [README 中文](./README.md)
-- [README English](./README_EN.md)
+你首先必须阅读 `README.luban.4.5.md` 文档, 了解原始 luban 项目功能.
 
-# Luban
+本项目作为配置编译工具, 专门为 roblox-ts 开发适配.
 
-![icon](docs/images/logo.png)
+本项目的编译成果为 `json`, 需要通过 `rojo` 同步到 roblox 项目中.
 
-[![license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT) ![star](https://img.shields.io/github/stars/focus-creative-games/luban?style=flat-square)
+**区别**
+- 专注于 roblox luau 代码生成
+- 提供 typescript 定义文件
+- 支持 flamework reflect id
+- 提供更多特性
 
 
-luban是一个强大、易用、优雅、稳定的游戏配置解决方案。它设计目标为满足从小型到超大型游戏项目的简单到复杂的游戏配置工作流需求。
+## 特性
 
-luban可以处理丰富的文件类型，支持主流的语言，可以生成多种导出格式，支持丰富的数据检验功能，具有良好的跨平台能力，并且生成极快。
-luban有清晰优雅的生成管线设计，支持良好的模块化和插件化，方便开发者进行二次开发。开发者很容易就能将luban适配到自己的配置格式，定制出满足项目要求的强大的配置工具。
+**工厂函数**
+- bean 的字段可以配置标签 `tags="ObjectFactory=true"`
+- 拥有该标签的 bean 字段在`解析为lua对象`时将会:
+    1. 生成 ()=>{} 的工厂函数
+    2. 返回该函数作为对象
 
-luban标准化了游戏配置开发工作流，可以极大提升策划和程序的工作效率。
+**Typescript reflect 定位**
+- 原理:
+    - 在 roblox-ts 项目中, 我们可以获取任意 class/interface 的 `id`, 格式为 `shared/plugins/buff-system/buff-core-plugin/components/buff-hooks@BuffHooks`
+    - 通过该 id, 我们能够以反射获取 class 的类型对象.
+- bean 可以配置标签 `tags="flameworkId={id}"`
+- 拥有该标签的 bean 在`解析为lua对象`时将会:
+    1. 获取 new 方法
+    2. 调用 new 法, 以自身配置为参数1, 以`{id}` 为参数2 获取 lua 对象
 
-## 核心特性
 
-- 丰富的源数据格式。支持excel族(csv,xls,xlsx,xlsm)、json、xml、yaml、lua等
-- 丰富的导出格式。 支持生成binary、json、bson、xml、lua、yaml等格式数据
-- 增强的excel格式。可以简洁地配置出像简单列表、子结构、结构列表，以及任意复杂的深层次的嵌套结构
-- 完备的类型系统。不仅能表达常见的规范行列表，由于**支持OOP类型继承**，能灵活优雅表达行为树、技能、剧情、副本之类复杂GamePlay数据
-- 支持多种的语言。内置支持生成c#、java、go、cpp、lua、python、javascript、typescript、rust、php、erlang、godot 等语言代码，同时还能通过protobuf之类消息方案支持其他语言
-- 支持主流的消息方案。 protobuf(schema + binary + json)、flatbuffers(schema + json)、msgpack(binary)
-- 强大的数据校验能力。ref引用检查、path资源路径、range范围检查等等
-- 完善的本地化支持
-- 支持所有主流的游戏引擎和平台。支持Unity、Unreal、Cocos2x、Godot、微信小游戏等
-- 良好的跨平台能力。能在Win,Linux,Mac平台良好运行。
-- 支持所有主流的热更新方案。hybridclr、ilruntime、{x,t,s}lua、puerts等
-- 生成的代码未调用任何反射接口，兼容[Obfuz](https://github.com/focus-creative-games/obfuz)、Obfuscator、Confuser、.Net Refactor等常见代码混淆和加固工具。
-- 清晰优雅的生成管线，很容易在luban基础上进行二次开发，定制出适合自己项目风格的配置工具。
+**Typescript 引用定位**
+- 我们需要在生成的 `.d.ts` 中, 引用已有的 ts 类型.
+- 我们只需要为 luban table type 引用类型, 不需要为每个 bean 引用.
+- table 可以配置标签 `tags="type={address}"`, 比如 `tags="type=shared/plugins/foo(FooType)"`
+- 则生成的 ts 文件为 `import {FooType} from "shared/plugins/foo"`
+- 支持 node_modules 规则: 比如 `tags="@rbxts/foo(FooType)"` 
 
-## 文档
-
-- [官方文档](https://www.datable.cn/)
-- [快速上手](https://www.datable.cn/docs/beginner/quickstart)
-- **示例项目** ([github](https://github.com/focus-creative-games/luban_examples)) ([gitee](https://gitee.com/focus-creative-games/luban_examples))
-
-## 支持与联系
-
-- QQ群: 692890842 （Luban开发交流群）
-- discord: <https://discord.gg/dGY4zzGMJ4>
-- 邮箱: <luban@code-philosophy.com>
-
-## license
-
-Luban is licensed under the [MIT](https://github.com/focus-creative-games/luban/blob/main/LICENSE) license
+**字符串枚举类型**
+- 原 luban 只支持数字类型枚举
+- 现在的规则: 如果 `value="string"`, 则认为是字符串类型枚举.

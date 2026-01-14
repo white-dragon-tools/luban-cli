@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <bean name="Item">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="price" type="float"/>
+    <var name="enabled" type="bool"/>
+  </bean>
+  <table name="TbItem" value="Item" input="*@items.json"/>
+</root>

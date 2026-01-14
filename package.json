@@ -1,0 +1,20 @@
+{
+  "name": "luban",
+  "version": "1.0.0",
+  "description": "Luban - Game configuration solution",
+  "scripts": {
+    "build": "cd src && dotnet build Luban.sln",
+    "build:release": "cd src && dotnet build Luban.sln -c Release",
+    "test": "cd tests/Luban.IntegrationTests && dotnet test",
+    "test:verbose": "cd tests/Luban.IntegrationTests && dotnet test --logger \"console;verbosity=detailed\"",
+    "test:filter": "cd tests/Luban.IntegrationTests && dotnet test --filter",
+    "test:watch": "cd tests/Luban.IntegrationTests && dotnet watch test",
+    "build:test": "npm run build && npm run test",
+    "format": "cd src && dotnet format --severity error -v n",
+    "clean": "cd src && dotnet clean Luban.sln && cd ../tests/Luban.IntegrationTests && dotnet clean"
+  },
+  "keywords": ["luban", "game", "configuration", "code-generation"],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.15.0"
+}
