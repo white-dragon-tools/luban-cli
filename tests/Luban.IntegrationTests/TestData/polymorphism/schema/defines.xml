@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- ========== 方式 1: 使用 parent 属性（更灵活） ========== -->
+
+  <!-- 抽象基类：技能效果 -->
+  <bean name="SkillEffect">
+    <var name="id" type="int"/>
+    <var name="description" type="string"/>
+  </bean>
+
+  <!-- 子类使用 parent 属性继承 -->
+  <bean name="DamageEffect" parent="SkillEffect">
+    <var name="damage" type="int"/>
+    <var name="damageType" type="string"/>
+  </bean>
+
+  <bean name="HealEffect" parent="SkillEffect">
+    <var name="healAmount" type="int"/>
+    <var name="targetType" type="string"/>
+  </bean>
+
+  <bean name="BuffEffect" parent="SkillEffect">
+    <var name="buffType" type="string"/>
+    <var name="duration" type="int"/>
+    <var name="value" type="int"/>
+  </bean>
+
+  <!-- ========== 方式 2: 多层继承使用 parent ========== -->
+
+  <!-- 一级基类 -->
+  <bean name="AIBehavior">
+    <var name="priority" type="int"/>
+    <var name="cooldown" type="float"/>
+  </bean>
+
+  <!-- 二级抽象类 -->
+  <bean name="CombatBehavior" parent="AIBehavior">
+    <var name="targetType" type="string"/>
+    <var name="range" type="float"/>
+  </bean>
+
+  <bean name="MovementBehavior" parent="AIBehavior">
+    <var name="speed" type="float"/>
+  </bean>
+
+  <!-- 三级具体类 -->
+  <bean name="MeleeAttack" parent="CombatBehavior">
+    <var name="weaponType" type="string"/>
+    <var name="comboCount" type="int"/>
+  </bean>
+
+  <bean name="RangedAttack" parent="CombatBehavior">
+    <var name="projectileSpeed" type="float"/>
+    <var name="accuracy" type="float"/>
+  </bean>
+
+  <bean name="PatrolMovement" parent="MovementBehavior">
+    <var name="patrolRadius" type="float"/>
+    <var name="waitTime" type="float"/>
+  </bean>
+
+  <bean name="ChaseMovement" parent="MovementBehavior">
+    <var name="chaseDistance" type="float"/>
+    <var name="giveUpDistance" type="float"/>
+  </bean>
+
+  <!-- 二级具体类（直接继承一级基类） -->
+  <bean name="DefenseBehavior" parent="AIBehavior">
+    <var name="blockChance" type="float"/>
+    <var name="dodgeChance" type="float"/>
+  </bean>
+
+  <!-- ========== 方式 3: 独立的多态类型 ========== -->
+
+  <bean name="Reward">
+    <var name="rewardId" type="int"/>
+    <var name="displayName" type="string"/>
+  </bean>
+
+  <bean name="CurrencyReward" parent="Reward">
+    <var name="currencyType" type="string"/>
+    <var name="amount" type="int"/>
+  </bean>
+
+  <bean name="ItemReward" parent="Reward">
+    <var name="itemId" type="int"/>
+    <var name="quantity" type="int"/>
+    <var name="quality" type="string"/>
+  </bean>
+
+  <bean name="ExpReward" parent="Reward">
+    <var name="expAmount" type="int"/>
+    <var name="expType" type="string"/>
+  </bean>
+
+  <!-- ========== 使用多态字段的配置 ========== -->
+
+  <bean name="Skill">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="cooldown" type="int"/>
+    <var name="effect" type="SkillEffect"/>
+  </bean>
+
+  <bean name="Enemy">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="level" type="int"/>
+    <var name="hp" type="int"/>
+    <var name="behaviors" type="array,AIBehavior"/>
+    <var name="dropRewards" type="array,Reward"/>
+  </bean>
+
+  <bean name="Quest">
+    <var name="id" type="int"/>
+    <var name="title" type="string"/>
+    <var name="description" type="string"/>
+    <var name="rewards" type="array,Reward"/>
+  </bean>
+
+  <table name="TbSkill" value="Skill" input="*@skills.json"/>
+  <table name="TbEnemy" value="Enemy" input="*@enemies.json"/>
+  <table name="TbQuest" value="Quest" input="*@quests.json"/>
+</root>

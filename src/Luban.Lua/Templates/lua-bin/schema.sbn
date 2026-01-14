@@ -13,10 +13,6 @@ end
 local enums =
 {
     {{~ for c in __enums ~}}
-    ---@class {{c.full_name}} {{-if c.comment != ''}} @{{escape_comment c.comment}}{{end}}
-    {{~ for item in c.items ~}}
-     ---@field public {{item.name}} {{if c.is_string_enum}}string{{else}}integer{{end}} {{-if item.comment != ''}} @{{escape_comment item.comment}}{{end}}
-    {{~end~}}
     ['{{c.full_name}}'] = {  {{ for item in c.items }} {{item.name}}={{if c.is_string_enum}}'{{item.value}}'{{else}}{{item.int_value}}{{end}}, {{end}} };
     {{~end~}}
 }
@@ -35,58 +31,41 @@ local tables =
 }
 
 local function InitTypes(methods)
-    local readBool = methods.readBool
-    local readByte = methods.readByte
-    local readShort = methods.readShort
-    local readFshort = methods.readFshort
-    local readInt = methods.readInt
-    local readFint = methods.readFint
-    local readLong = methods.readLong
-    local readFlong = methods.readFlong
-    local readFloat = methods.readFloat
-    local readDouble = methods.readDouble
-    local readSize = methods.readSize
-    local readString = methods.readString
-
     local readList = methods.readList
     local readArray = methods.readArray or readList
     local readSet = methods.readSet
     local readMap = methods.readMap
-    local readNullableBool = methods.readNullableBool
 
     local beans = {}
 {{~ for bean in __beans ~}}
     do
-    ---@class {{bean.full_name}} {{-if bean.parent_def_type}}:{{bean.parent}} {{end}} {{-if bean.comment != ''}} @{{escape_comment bean.comment}}{{end}}
-    {{~ for field in bean.export_fields~}}
-         ---@field public {{field.name}} {{comment_type field.ctype}} {{-if field.comment != ''}} @{{escape_comment field.comment}}{{end}}
-    {{~end~}}
-
         local class = methods.getClass('{{bean.full_name}}')
-        class._id = {{bean.id}}
-        class._type_ = '{{bean.full_name}}'
-        local id2name = { {{for c in bean.hierarchy_not_abstract_children}} [{{c.id}}] = '{{c.full_name}}', {{end}} }
 {{~if bean.is_abstract_type~}}
         class._deserialize = function(bs)
-            local id = readInt(bs)
-            return beans[id2name[id]]._deserialize(bs)
+            local __type__ = bs["$type"]
+            {{~ for child in bean.hierarchy_not_abstract_children ~}}
+            {{~ if for.first ~}}if{{~ else ~}}elseif{{~ end }} __type__ == "{{child.full_name}}" then
+                return beans["{{child.full_name}}"]._deserialize(bs)
+            {{~ end ~}}
+            else
+                error("Unknown type for {{bean.full_name}}: " .. tostring(__type__))
+            end
         end
 {{~else~}}
         class._deserialize = function(bs)
-            local o = {
+            local o = table.clone(bs)
         {{~ for field in bean.hierarchy_export_fields ~}}
-            {{~if !(need_marshal_bool_prefix field.ctype)~}}
-            {{field.name}} = {{deserialize 'bs' field.ctype}},
-            {{~else~}}
-            {{field.name}} = {{if !field.ctype.is_bool}}readBool(bs) and {{deserialize 'bs' field.ctype}} or nil {{-else-}} readNullableBool(bs) {{-end-}},
+            {{~if field.ctype.is_bean~}}
+            o.{{field.name}} = {{deserialize ('bs.' + field.name) field.ctype}}
+            {{~else if field.ctype.is_collection && field.ctype.element_type.is_bean~}}
+            o.{{field.name}} = {{deserialize ('bs.' + field.name) field.ctype}}
             {{~end~}}
         {{~end~}}
-            }
             setmetatable(o, class)
             return o
         end
 {{~end~}}
-        beans[class._type_] = class
+        beans['{{bean.full_name}}'] = class
     end
 {{~end~}}
 

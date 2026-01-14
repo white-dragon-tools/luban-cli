@@ -29,69 +29,30 @@ local tables =
 }
 
 local function InitTypes(methods)
-    local readBool = methods.readBool
-    local readByte = methods.readByte
-    local readShort = methods.readShort
-    local readFshort = methods.readFshort
-    local readInt = methods.readInt
-    local readFint = methods.readFint
-    local readLong = methods.readLong
-    local readFlong = methods.readFlong
-    local readFloat = methods.readFloat
-    local readDouble = methods.readDouble
-    local readSize = methods.readSize
-    local readString = methods.readString
-
     local readList = methods.readList
     local readArray = methods.readArray or readList
     local readSet = methods.readSet
     local readMap = methods.readMap
-    local readNullableBool = methods.readNullableBool
 
     local beans = {}
     do
-    ---@class Quest
-         ---@field public id integer
-         ---@field public name string
-         ---@field public rewards Reward[]
-         ---@field public requirements table<integer, integer>
-         ---@field public prerequisites integer[]
-
         local class = methods.getClass('Quest')
-        class._id = 78391490
-        class._type_ = 'Quest'
-        local id2name = {  }
         class._deserialize = function(bs)
-            local o = {
-            id = readInt(bs),
-            name = readString(bs),
-            rewards = readArray(bs, beans['Reward']._deserialize),
-            requirements = readMap(bs, readInt, readInt),
-            prerequisites = readList(bs, readInt),
-            }
+            local o = table.clone(bs)
+            o.rewards = readArray(bs.rewards, beans['Reward']._deserialize)
             setmetatable(o, class)
             return o
         end
-        beans[class._type_] = class
+        beans['Quest'] = class
     end
     do
-    ---@class Reward
-         ---@field public id integer
-         ---@field public amount integer
-
         local class = methods.getClass('Reward')
-        class._id = -1850459313
-        class._type_ = 'Reward'
-        local id2name = {  }
         class._deserialize = function(bs)
-            local o = {
-            id = readInt(bs),
-            amount = readInt(bs),
-            }
+            local o = table.clone(bs)
             setmetatable(o, class)
             return o
         end
-        beans[class._type_] = class
+        beans['Reward'] = class
     end
 
 
@@ -99,4 +60,5 @@ local function InitTypes(methods)
     end
 
 return { InitTypes = InitTypes }
+
 

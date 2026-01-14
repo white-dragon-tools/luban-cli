@@ -1,0 +1,100 @@
+[
+  {
+    "id": 1,
+    "name": "Goblin",
+    "level": 5,
+    "hp": 100,
+    "behaviors": [
+      {
+        "$type": "MeleeAttack",
+        "priority": 10,
+        "cooldown": 2,
+        "targetType": "player",
+        "range": 2.5,
+        "weaponType": "club",
+        "comboCount": 2
+      },
+      {
+        "$type": "PatrolMovement",
+        "priority": 5,
+        "cooldown": 0,
+        "speed": 3,
+        "patrolRadius": 10,
+        "waitTime": 3
+      },
+      {
+        "$type": "DefenseBehavior",
+        "priority": 8,
+        "cooldown": 5,
+        "blockChance": 0.3,
+        "dodgeChance": 0.1
+      }
+    ],
+    "dropRewards": [
+      {
+        "$type": "CurrencyReward",
+        "rewardId": 1001,
+        "displayName": "Gold Coins",
+        "currencyType": "gold",
+        "amount": 50
+      },
+      {
+        "$type": "ItemReward",
+        "rewardId": 1002,
+        "displayName": "Goblin Ear",
+        "itemId": 2001,
+        "quantity": 1,
+        "quality": "common"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Skeleton Archer",
+    "level": 8,
+    "hp": 80,
+    "behaviors": [
+      {
+        "$type": "RangedAttack",
+        "priority": 10,
+        "cooldown": 3,
+        "targetType": "player",
+        "range": 15,
+        "projectileSpeed": 20,
+        "accuracy": 0.8
+      },
+      {
+        "$type": "ChaseMovement",
+        "priority": 7,
+        "cooldown": 0,
+        "speed": 4,
+        "chaseDistance": 20,
+        "giveUpDistance": 30
+      }
+    ],
+    "dropRewards": [
+      {
+        "$type": "CurrencyReward",
+        "rewardId": 2001,
+        "displayName": "Silver Coins",
+        "currencyType": "silver",
+        "amount": 100
+      },
+      {
+        "$type": "ItemReward",
+        "rewardId": 2002,
+        "displayName": "Bone Arrow",
+        "itemId": 3001,
+        "quantity": 5,
+        "quality": "uncommon"
+      },
+      {
+        "$type": "ExpReward",
+        "rewardId": 2003,
+        "displayName": "Combat Experience",
+        "expAmount": 150,
+        "expType": "combat"
+      }
+    ]
+  }
+]

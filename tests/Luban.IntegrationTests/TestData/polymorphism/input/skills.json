@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "name": "Fireball",
+    "cooldown": 5,
+    "effect": {
+      "$type": "DamageEffect",
+      "id": 101,
+      "description": "Deals fire damage to target",
+      "damage": 100,
+      "damageType": "fire"
+    }
+  },
+  {
+    "id": 2,
+    "name": "Healing Touch",
+    "cooldown": 10,
+    "effect": {
+      "$type": "HealEffect",
+      "id": 102,
+      "description": "Restores health to target",
+      "healAmount": 150,
+      "targetType": "single"
+    }
+  },
+  {
+    "id": 3,
+    "name": "Speed Boost",
+    "cooldown": 15,
+    "effect": {
+      "$type": "BuffEffect",
+      "id": 103,
+      "description": "Increases movement speed",
+      "buffType": "speed",
+      "duration": 30,
+      "value": 50
+    }
+  },
+  {
+    "id": 4,
+    "name": "Ice Blast",
+    "cooldown": 7,
+    "effect": {
+      "$type": "DamageEffect",
+      "id": 104,
+      "description": "Deals ice damage and slows target",
+      "damage": 80,
+      "damageType": "ice"
+    }
+  }
+]

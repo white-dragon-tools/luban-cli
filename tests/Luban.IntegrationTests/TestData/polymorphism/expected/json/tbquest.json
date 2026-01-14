@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "title": "Goblin Slayer",
+    "description": "Defeat 10 goblins in the forest",
+    "rewards": [
+      {
+        "$type": "CurrencyReward",
+        "rewardId": 101,
+        "displayName": "Quest Gold",
+        "currencyType": "gold",
+        "amount": 500
+      },
+      {
+        "$type": "ExpReward",
+        "rewardId": 102,
+        "displayName": "Quest Experience",
+        "expAmount": 1000,
+        "expType": "quest"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Treasure Hunter",
+    "description": "Find the legendary sword",
+    "rewards": [
+      {
+        "$type": "ItemReward",
+        "rewardId": 201,
+        "displayName": "Legendary Sword",
+        "itemId": 9001,
+        "quantity": 1,
+        "quality": "legendary"
+      },
+      {
+        "$type": "CurrencyReward",
+        "rewardId": 202,
+        "displayName": "Bonus Gold",
+        "currencyType": "gold",
+        "amount": 2000
+      },
+      {
+        "$type": "ExpReward",
+        "rewardId": 203,
+        "displayName": "Exploration Experience",
+        "expAmount": 5000,
+        "expType": "exploration"
+      }
+    ]
+  }
+]

@@ -21,15 +21,7 @@ end
 
 local enums =
 {
-    ---@class ItemRarity
-     ---@field public Common integer
-     ---@field public Rare integer
-     ---@field public Epic integer
     ['ItemRarity'] = {   Common=1,  Rare=2,  Epic=3,  };
-    ---@class ItemType
-     ---@field public Weapon string
-     ---@field public Armor string
-     ---@field public Consumable string
     ['ItemType'] = {   Weapon='weapon',  Armor='armor',  Consumable='consumable',  };
 }
 
@@ -39,48 +31,20 @@ local tables =
 }
 
 local function InitTypes(methods)
-    local readBool = methods.readBool
-    local readByte = methods.readByte
-    local readShort = methods.readShort
-    local readFshort = methods.readFshort
-    local readInt = methods.readInt
-    local readFint = methods.readFint
-    local readLong = methods.readLong
-    local readFlong = methods.readFlong
-    local readFloat = methods.readFloat
-    local readDouble = methods.readDouble
-    local readSize = methods.readSize
-    local readString = methods.readString
-
     local readList = methods.readList
     local readArray = methods.readArray or readList
     local readSet = methods.readSet
     local readMap = methods.readMap
-    local readNullableBool = methods.readNullableBool
 
     local beans = {}
     do
-    ---@class Item
-         ---@field public id integer
-         ---@field public name string
-         ---@field public type integer
-         ---@field public rarity integer
-
         local class = methods.getClass('Item')
-        class._id = 2289459
-        class._type_ = 'Item'
-        local id2name = {  }
         class._deserialize = function(bs)
-            local o = {
-            id = readInt(bs),
-            name = readString(bs),
-            type = readInt(bs),
-            rarity = readInt(bs),
-            }
+            local o = table.clone(bs)
             setmetatable(o, class)
             return o
         end
-        beans[class._type_] = class
+        beans['Item'] = class
     end
 
 

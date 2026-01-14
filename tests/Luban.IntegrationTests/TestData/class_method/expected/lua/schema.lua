@@ -29,44 +29,20 @@ local tables =
 }
 
 local function InitTypes(methods)
-    local readBool = methods.readBool
-    local readByte = methods.readByte
-    local readShort = methods.readShort
-    local readFshort = methods.readFshort
-    local readInt = methods.readInt
-    local readFint = methods.readFint
-    local readLong = methods.readLong
-    local readFlong = methods.readFlong
-    local readFloat = methods.readFloat
-    local readDouble = methods.readDouble
-    local readSize = methods.readSize
-    local readString = methods.readString
-
     local readList = methods.readList
     local readArray = methods.readArray or readList
     local readSet = methods.readSet
     local readMap = methods.readMap
-    local readNullableBool = methods.readNullableBool
 
     local beans = {}
     do
-    ---@class Item
-         ---@field public id integer
-         ---@field public name string
-
         local class = methods.getClass('Item')
-        class._id = 2289459
-        class._type_ = 'Item'
-        local id2name = {  }
         class._deserialize = function(bs)
-            local o = {
-            id = readInt(bs),
-            name = readString(bs),
-            }
+            local o = table.clone(bs)
             setmetatable(o, class)
             return o
         end
-        beans[class._type_] = class
+        beans['Item'] = class
     end
 
 

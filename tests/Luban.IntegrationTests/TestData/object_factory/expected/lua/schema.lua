@@ -29,65 +29,30 @@ local tables =
 }
 
 local function InitTypes(methods)
-    local readBool = methods.readBool
-    local readByte = methods.readByte
-    local readShort = methods.readShort
-    local readFshort = methods.readFshort
-    local readInt = methods.readInt
-    local readFint = methods.readFint
-    local readLong = methods.readLong
-    local readFlong = methods.readFlong
-    local readFloat = methods.readFloat
-    local readDouble = methods.readDouble
-    local readSize = methods.readSize
-    local readString = methods.readString
-
     local readList = methods.readList
     local readArray = methods.readArray or readList
     local readSet = methods.readSet
     local readMap = methods.readMap
-    local readNullableBool = methods.readNullableBool
 
     local beans = {}
     do
-    ---@class EffectData
-         ---@field public damage integer
-         ---@field public duration number
-
         local class = methods.getClass('EffectData')
-        class._id = -586168069
-        class._type_ = 'EffectData'
-        local id2name = {  }
         class._deserialize = function(bs)
-            local o = {
-            damage = readInt(bs),
-            duration = readFloat(bs),
-            }
+            local o = table.clone(bs)
             setmetatable(o, class)
             return o
         end
-        beans[class._type_] = class
+        beans['EffectData'] = class
     end
     do
-    ---@class SkillConfig
-         ---@field public id integer
-         ---@field public name string
-         ---@field public effect EffectData
-
         local class = methods.getClass('SkillConfig')
-        class._id = -844226349
-        class._type_ = 'SkillConfig'
-        local id2name = {  }
         class._deserialize = function(bs)
-            local o = {
-            id = readInt(bs),
-            name = readString(bs),
-            effect = beans['EffectData']._deserialize(bs),
-            }
+            local o = table.clone(bs)
+            o.effect = beans['EffectData']._deserialize(bs.effect)
             setmetatable(o, class)
             return o
         end
-        beans[class._type_] = class
+        beans['SkillConfig'] = class
     end
 
 
