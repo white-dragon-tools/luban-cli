@@ -9,21 +9,7 @@
 
 local setmetatable = setmetatable
 local pairs = pairs
-local ipairs = ipairs
 local tinsert = table.insert
-
-local function SimpleClass()
-    local class = {}
-    class.__index = class
-    class.New = function(...)
-        local ctor = class.ctor
-        local o = ctor and ctor(...) or {}
-        setmetatable(o, class)
-        return o
-    end
-    return class
-end
-
 
 local function get_map_size(m)
     local n = 0
@@ -54,61 +40,13 @@ local function InitTypes(methods)
     local readFloat = methods.readFloat
     local readDouble = methods.readDouble
     local readSize = methods.readSize
-
     local readString = methods.readString
 
-    local function readList(bs, keyFun)
-        local list = {}
-        local v
-        for i = 1, readSize(bs) do
-            tinsert(list, keyFun(bs))
-        end
-        return list
-    end
-
-    local readArray = readList
-
-    local function readSet(bs, keyFun)
-        local set = {}
-        local v
-        for i = 1, readSize(bs) do
-            tinsert(set, keyFun(bs))
-        end
-        return set
-    end
-
-    local function readMap(bs, keyFun, valueFun)
-        local map = {}
-        for i = 1, readSize(bs) do
-            local k = keyFun(bs)
-            local v = valueFun(bs)
-            map[k] = v
-        end
-        return map
-    end
-
-    local function readNullableBool(bs)
-        if readBool(bs) then
-            return readBool(bs)
-        end
-    end
-
-    local beans = {}
-        do
-        ---@class Item
-         ---@field public id integer
-         ---@field public name string
-         ---@field public price number
-         ---@field public enabled boolean
-
-            local class = {
-                { name='id', type='integer'},
-                { name='name', type='string'},
-                { name='price', type='number'},
-                { name='enabled', type='boolean'},
-            }
-            beans['Item'] = class
-        end
+    local readList = methods.readList
+    local readArray = methods.readArray or readList
+    local readSet = methods.readSet
+    local readMap = methods.readMap
+    local readNullableBool = methods.readNullableBool
 
     local beans = {}
     do

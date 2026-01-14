@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "Beginner Quest",
+    "rewards": [
+      {"id": 101, "amount": 50},
+      {"id": 102, "amount": 100}
+    ],
+    "requirements": [
+      [1001, 5],
+      [1002, 3]
+    ],
+    "prerequisites": [0]
+  },
+  {
+    "id": 2,
+    "name": "Advanced Quest",
+    "rewards": [
+      {"id": 201, "amount": 200},
+      {"id": 202, "amount": 300},
+      {"id": 203, "amount": 150}
+    ],
+    "requirements": [
+      [2001, 10],
+      [2002, 7],
+      [2003, 5]
+    ],
+    "prerequisites": [1, 3, 5]
+  }
+]

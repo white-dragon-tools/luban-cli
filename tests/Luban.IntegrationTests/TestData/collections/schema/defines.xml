@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 嵌套的 Bean 类型 -->
+  <bean name="Reward">
+    <var name="id" type="int"/>
+    <var name="amount" type="int"/>
+  </bean>
+
+  <bean name="Quest">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <!-- Array: 奖励列表 -->
+    <var name="rewards" type="array,Reward"/>
+    <!-- Map: 需求物品 (itemId -> quantity) -->
+    <var name="requirements" type="map,int,int"/>
+    <!-- List: 前置任务ID列表 -->
+    <var name="prerequisites" type="list,int"/>
+  </bean>
+
+  <table name="TbQuest" value="Quest" input="*@quests.json"/>
+</root>

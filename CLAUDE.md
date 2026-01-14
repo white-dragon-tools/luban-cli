@@ -121,6 +121,35 @@ The integration testing framework provides:
 
 The `*@` prefix indicates the JSON file contains an array of records.
 
+**Luau Code Validation:**
+
+Generated Lua code is automatically validated using Luau static analysis during integration tests.
+
+Install Luau analyzer:
+```bash
+# Using rokit (recommended)
+rokit add luau-lang/luau
+
+# Using npm script
+npm run luau:install
+```
+
+Run Luau validation:
+```bash
+# Check all Lua files in test data
+npm run luau:check
+
+# Strict mode
+npm run luau:check:strict
+```
+
+Validation behavior during tests:
+- **Errors**: Tests fail if Luau detects type errors or syntax errors
+- **Warnings**: Tests pass but warnings are displayed (common for generated code)
+- **Analyzer unavailable**: Tests skip validation with a console message
+
+For detailed Luau integration documentation, see `docs/LUAU_INTEGRATION.md`.
+
 ## Architecture Overview
 
 ### Core Pipeline Flow

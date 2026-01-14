@@ -1,21 +1,6 @@
 local setmetatable = setmetatable
 local pairs = pairs
--- local ipairs = ipairs  -- Not used, commented out to satisfy Luau linter
 local tinsert = table.insert
-
-local function SimpleClass()
-    local class = {}
-    class.__index = class
-    class.New = function(...)
-        -- Use rawget to safely check for ctor without triggering Luau type error
-        local ctor = rawget(class, 'ctor')
-        local o = ctor and ctor(...) or {}
-        setmetatable(o, class)
-        return o
-    end
-    return class
-end
-
 
 local function get_map_size(m)
     local n = 0
@@ -61,72 +46,20 @@ local function InitTypes(methods)
     local readFloat = methods.readFloat
     local readDouble = methods.readDouble
     local readSize = methods.readSize
-
     local readString = methods.readString
 
-local function readList(bs, keyFun)
-    local list = {}
-    for i =1, readSize(bs) do
-        tinsert(list, keyFun(bs))
-    end
-    return list
-end
-        return list
-    end
-
-    local readArray = readList
-
-local function readSet(bs, keyFun)
-    local set = {}
-    for i =1, readSize(bs) do
-        tinsert(set, keyFun(bs))
-    end
-    return set
-end
-        return set
-    end
-
-    local function readMap(bs, keyFun, valueFun)
-        local map = {}
-        for i = 1, readSize(bs) do
-            local k = keyFun(bs)
-            local v = valueFun(bs)
-            map[k] = v
-        end
-        return map
-    end
-
-local function readNullableBool(bs)
-    if readBool(bs) then
-        return readBool(bs)
-    else
-        return nil
-    end
-end
-
-    local beans = {}
-    {{~ for bean in __beans ~}}
-        do
-        ---@class {{bean.full_name}} {{-if bean.parent_def_type}}:{{bean.parent}} {{end}} {{-if bean.comment != ''}} @{{escape_comment bean.comment}}{{end}}
-        {{~ for field in bean.export_fields~}}
-         ---@field public {{field.name}} {{comment_type field.ctype}} {{-if field.comment != ''}} @{{escape_comment field.comment}}{{end}}
-        {{~end~}}
-
-            local class = {
-                {{~ for field in bean.export_fields~}}
-                { name='{{field.name}}', type='{{comment_type field.ctype}}'},
-                {{~end~}}
-            }
-            beans['{{bean.full_name}}'] = class
-        end
-    {{~end~}}
+    local readList = methods.readList
+    local readArray = methods.readArray or readList
+    local readSet = methods.readSet
+    local readMap = methods.readMap
+    local readNullableBool = methods.readNullableBool
 
     local beans = {}
 {{~ for bean in __beans ~}}
     do
-    ---@class {{bean.full_name}} {{-if bean.parent_def_type}}:{{bean.parent}} {{end}}
+    ---@class {{bean.full_name}} {{-if bean.parent_def_type}}:{{bean.parent}} {{end}} {{-if bean.comment != ''}} @{{escape_comment bean.comment}}{{end}}
     {{~ for field in bean.export_fields~}}
-         ---@field public {{field.name}} {{comment_type field.ctype}}
+         ---@field public {{field.name}} {{comment_type field.ctype}} {{-if field.comment != ''}} @{{escape_comment field.comment}}{{end}}
     {{~end~}}
 
         local class = methods.getClass('{{bean.full_name}}')

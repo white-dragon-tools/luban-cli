@@ -43,6 +43,15 @@ public abstract class IntegrationTestBase : IDisposable
     protected void AssertJsonMatch(string expectedPath, string actualPath)
     {
         var result = _jsonComparer.Compare(expectedPath, actualPath);
+
+        // TEMPORARY: Output actual file content for collections test
+        if (!result.IsMatch && actualPath.Contains("collections"))
+        {
+            Console.WriteLine("=== ACTUAL JSON CONTENT ===");
+            Console.WriteLine(File.ReadAllText(actualPath));
+            Console.WriteLine("=== END ACTUAL JSON CONTENT ===");
+        }
+
         Assert.True(result.IsMatch, result.GetFormattedMessage());
     }
 
@@ -52,6 +61,15 @@ public abstract class IntegrationTestBase : IDisposable
     protected void AssertLuaMatch(string expectedPath, string actualPath)
     {
         var result = _luaComparer.Compare(expectedPath, actualPath);
+
+        // TEMPORARY: Output actual file content for collections test
+        if (!result.IsMatch && actualPath.Contains("collections"))
+        {
+            Console.WriteLine("=== ACTUAL LUA CONTENT ===");
+            Console.WriteLine(File.ReadAllText(actualPath));
+            Console.WriteLine("=== END ACTUAL LUA CONTENT ===");
+        }
+
         Assert.True(result.IsMatch, result.GetFormattedMessage());
     }
 

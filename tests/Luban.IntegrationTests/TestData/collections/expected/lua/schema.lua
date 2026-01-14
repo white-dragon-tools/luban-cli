@@ -25,7 +25,7 @@ local enums =
 
 local tables =
 {
-    { name='TbItem', file='tbitem', mode='map', index='id', value_type='Item' },
+    { name='TbQuest', file='tbquest', mode='map', index='id', value_type='Quest' },
 }
 
 local function InitTypes(methods)
@@ -50,18 +50,43 @@ local function InitTypes(methods)
 
     local beans = {}
     do
-    ---@class Item
+    ---@class Quest
          ---@field public id integer
          ---@field public name string
+         ---@field public rewards Reward[]
+         ---@field public requirements table<integer, integer>
+         ---@field public prerequisites integer[]
 
-        local class = methods.getClass('Item')
-        class._id = 2289459
-        class._type_ = 'Item'
+        local class = methods.getClass('Quest')
+        class._id = 78391490
+        class._type_ = 'Quest'
         local id2name = {  }
         class._deserialize = function(bs)
             local o = {
             id = readInt(bs),
             name = readString(bs),
+            rewards = readArray(bs, beans['Reward']._deserialize),
+            requirements = readMap(bs, readInt, readInt),
+            prerequisites = readList(bs, readInt),
+            }
+            setmetatable(o, class)
+            return o
+        end
+        beans[class._type_] = class
+    end
+    do
+    ---@class Reward
+         ---@field public id integer
+         ---@field public amount integer
+
+        local class = methods.getClass('Reward')
+        class._id = -1850459313
+        class._type_ = 'Reward'
+        local id2name = {  }
+        class._deserialize = function(bs)
+            local o = {
+            id = readInt(bs),
+            amount = readInt(bs),
             }
             setmetatable(o, class)
             return o
@@ -74,5 +99,4 @@ local function InitTypes(methods)
     end
 
 return { InitTypes = InitTypes }
-
 
