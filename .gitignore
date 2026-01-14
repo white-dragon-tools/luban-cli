@@ -273,3 +273,6 @@ __pycache__/
 /src/packages
 /src/.vscode
 /src/Luban/Properties/*.json
+
+# Git worktrees
+.worktrees/
