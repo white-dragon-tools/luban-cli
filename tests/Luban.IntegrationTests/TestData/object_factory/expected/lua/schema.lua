@@ -125,7 +125,7 @@ local function InitTypes(methods)
          ---@field public damage integer
          ---@field public duration number
 
-        local class = SimpleClass()
+        local class = methods.getClass('EffectData')
         class._id = -586168069
         class._type_ = 'EffectData'
         local id2name = {  }
@@ -145,7 +145,7 @@ local function InitTypes(methods)
          ---@field public name string
          ---@field public effect EffectData
 
-        local class = SimpleClass()
+        local class = methods.getClass('SkillConfig')
         class._id = -844226349
         class._type_ = 'SkillConfig'
         local id2name = {  }

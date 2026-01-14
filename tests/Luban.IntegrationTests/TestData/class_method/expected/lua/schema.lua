@@ -98,14 +98,10 @@ local function InitTypes(methods)
         ---@class Item
          ---@field public id integer
          ---@field public name string
-         ---@field public price number
-         ---@field public enabled boolean
 
             local class = {
                 { name='id', type='integer'},
                 { name='name', type='string'},
-                { name='price', type='number'},
-                { name='enabled', type='boolean'},
             }
             beans['Item'] = class
         end
@@ -115,8 +111,6 @@ local function InitTypes(methods)
     ---@class Item
          ---@field public id integer
          ---@field public name string
-         ---@field public price number
-         ---@field public enabled boolean
 
         local class = methods.getClass('Item')
         class._id = 2289459
@@ -126,8 +120,6 @@ local function InitTypes(methods)
             local o = {
             id = readInt(bs),
             name = readString(bs),
-            price = readFloat(bs),
-            enabled = readBool(bs),
             }
             setmetatable(o, class)
             return o

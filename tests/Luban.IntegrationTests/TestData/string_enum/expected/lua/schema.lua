@@ -128,7 +128,7 @@ local function InitTypes(methods)
          ---@field public type integer
          ---@field public rarity integer
 
-        local class = SimpleClass()
+        local class = methods.getClass('Item')
         class._id = 2289459
         class._type_ = 'Item'
         local id2name = {  }

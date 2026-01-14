@@ -124,7 +124,7 @@ local function InitTypes(methods)
          ---@field public {{field.name}} {{comment_type field.ctype}}
     {{~end~}}
 
-        local class = SimpleClass()
+        local class = methods.getClass('{{bean.full_name}}')
         class._id = {{bean.id}}
         class._type_ = '{{bean.full_name}}'
         local id2name = { {{for c in bean.hierarchy_not_abstract_children}} [{{c.id}}] = '{{c.full_name}}', {{end}} }
