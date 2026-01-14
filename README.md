@@ -200,12 +200,12 @@ export const TbConfig: GameConfig;
 字符串枚举在配置文件中更具可读性，也更容易与外部系统集成。
 
 #### 配置方式
-在 enum 定义中设置 `value="string"`，并为每个枚举项指定字符串值
+直接设置 enum 的value.
 
 #### Schema 示例
 ```xml
 <!-- 字符串枚举 -->
-<enum name="ItemType" value="string">
+<enum name="ItemType">
     <var name="Weapon" value="weapon"/>
     <var name="Armor" value="armor"/>
     <var name="Consumable" value="consumable"/>
@@ -213,7 +213,7 @@ export const TbConfig: GameConfig;
 </enum>
 
 <!-- 数字枚举（原版 Luban 默认） -->
-<enum name="ItemRarity" value="int">
+<enum name="ItemRarity">
     <var name="Common" value="1"/>
     <var name="Rare" value="2"/>
     <var name="Epic" value="3"/>
