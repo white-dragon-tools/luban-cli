@@ -57,6 +57,8 @@ public class DefEnum : DefTypeBase
 
     public bool IsUniqueItemId { get; }
 
+    public bool IsStringEnum { get; private set; }
+
     public List<Item> Items { get; } = new();
 
     private readonly Dictionary<string, int> _nameOrAlias2Value = new();
@@ -90,6 +92,16 @@ public class DefEnum : DefTypeBase
         if (_nameOrAlias2Value.TryGetValue(name, out var value))
         {
             return value;
+        }
+        else if (IsStringEnum)
+        {
+            // For string enums, also check if the input matches a Value
+            var item = Items.FirstOrDefault(i => i.Value == name);
+            if (item != null)
+            {
+                return item.IntValue;
+            }
+            throw new Exception($"'{name}' 不是enum:'{FullName}'的有效枚举值");
         }
         else if (int.TryParse(name, out value))
         {
@@ -133,8 +145,19 @@ public class DefEnum : DefTypeBase
     {
         var fullName = FullName;
 
+        // Detect if this is a string enum by checking if any item has a non-numeric value
+        IsStringEnum = Items.Any(item =>
+        {
+            if (string.IsNullOrEmpty(item.Value)) return false;
+            string value = item.Value.ToLower();
+            if (int.TryParse(item.Value, out _)) return false;
+            if (value.StartsWith("0x")) return false;
+            return true;
+        });
+
         int lastEnumValue = -1;
         var names = new HashSet<string>();
+        int itemIndex = 0;
         foreach (var item in Items)
         {
             string value = item.Value.ToLower();
@@ -142,7 +165,18 @@ public class DefEnum : DefTypeBase
             {
                 throw new Exception($"enum:'{fullName}' 字段:'{item.Name}' 重复");
             }
-            if (string.IsNullOrEmpty(value))
+
+            if (IsStringEnum)
+            {
+                // For string enums, require explicit string values
+                if (string.IsNullOrEmpty(item.Value))
+                {
+                    throw new Exception($"enum:'{fullName}' 枚举名:'{item.Name}' 字符串枚举必须有明确的值");
+                }
+                // Use index as IntValue for internal tracking
+                item.IntValue = itemIndex;
+            }
+            else if (string.IsNullOrEmpty(value))
             {
                 //  A,
                 item.IntValue = ++lastEnumValue;
@@ -206,6 +240,8 @@ public class DefEnum : DefTypeBase
             {
                 _vaule2Name.Add(item.IntValue, item.Name);
             }
+
+            itemIndex++;
         }
 
 

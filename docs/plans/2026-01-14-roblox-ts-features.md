@@ -20,17 +20,16 @@ Phase 4: TypeScript 引用定位 (需要新建代码生成器)
 ## Phase 1: 字符串枚举类型
 
 ### 实现思路
-扩展枚举系统，支持 `value="string"` 的枚举定义。
+扩展枚举系统，支持字符串的枚举定义。
 
 ### 核心逻辑
-1. **Schema 解析**: 在 RawEnum 中添加 ValueType 属性，从 XML 读取
+1. **Schema 解析**: 根据枚举值(如果含有任意字符串), 则认为是字符串枚举.
 2. **类型系统**: 在 DefEnum 中添加 IsStringEnum 判断和 StringValue 存储
-3. **编译逻辑**: Compile() 方法中分支处理字符串枚举，验证必须有显式 value
+3. **编译逻辑**: Compile() 方法中分支处理字符串枚举
 4. **数据加载**: 数据加载器需要支持字符串枚举值的解析
 5. **Lua 生成**: 模板中生成字符串值而不是整数值
 
 ### 关键文件
-- `src/Luban.Core/RawDefs/RawEnum.cs` - 添加 ValueType 属性
 - `src/Luban.Core/Defs/DefEnum.cs` - 添加字符串枚举支持
 - `src/Luban.Lua/Templates/lua-lua/schema.sbn` - 模板支持字符串值
 - `src/Luban.Core/DataLoader/` - 数据加载器支持字符串枚举

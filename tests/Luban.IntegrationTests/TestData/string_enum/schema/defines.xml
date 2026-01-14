@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 字符串枚举 -->
+  <enum name="ItemType">
+    <var name="Weapon" value="weapon"/>
+    <var name="Armor" value="armor"/>
+    <var name="Consumable" value="consumable"/>
+  </enum>
+
+  <!-- 数字枚举（验证不影响现有功能） -->
+  <enum name="ItemRarity">
+    <var name="Common" value="1"/>
+    <var name="Rare" value="2"/>
+    <var name="Epic" value="3"/>
+  </enum>
+
+  <bean name="Item">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="type" type="ItemType"/>
+    <var name="rarity" type="ItemRarity"/>
+  </bean>
+
+  <table name="TbItem" value="Item" input="*@items.json"/>
+</root>

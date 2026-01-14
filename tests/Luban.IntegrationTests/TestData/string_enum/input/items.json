@@ -1,0 +1,5 @@
+[
+  {"id": 1, "name": "长剑", "type": "weapon", "rarity": 1},
+  {"id": 2, "name": "皮甲", "type": "armor", "rarity": 2},
+  {"id": 3, "name": "生命药水", "type": "consumable", "rarity": 1}
+]

@@ -4,9 +4,9 @@ local enums =
     {{~ for c in __enums ~}}
     ---@class {{c.full_name}} {{-if c.comment != ''}} @{{escape_comment c.comment}}{{end}}
     {{~ for item in c.items ~}}
-     ---@field public {{item.name}} integer {{-if item.comment != ''}} @{{escape_comment item.comment}}{{end}}
+     ---@field public {{item.name}} {{if c.is_string_enum}}string{{else}}integer{{end}} {{-if item.comment != ''}} @{{escape_comment item.comment}}{{end}}
     {{~end~}}
-    ['{{c.full_name}}'] = {  {{ for item in c.items }} {{item.name}}={{item.int_value}}, {{end}} };
+    ['{{c.full_name}}'] = {  {{ for item in c.items }} {{item.name}}={{if c.is_string_enum}}'{{item.value}}'{{else}}{{item.int_value}}{{end}}, {{end}} };
     {{~end~}}
 }
 
