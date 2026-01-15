@@ -1,6 +1,6 @@
 {
-  "name": "luban",
-  "version": "1.0.0",
+  "name": "@white-dragon-bevy/luban",
+  "version": "0.8.0",
   "description": "Luban - Game configuration solution",
   "scripts": {
     "build": "cd src && dotnet build Luban.sln",
@@ -19,5 +19,13 @@
   "keywords": ["luban", "game", "configuration", "code-generation"],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/white-dragon-bevy/luban.git"
+  },
+  "bugs": {
+    "url": "https://github.com/white-dragon-bevy/luban/issues"
+  },
+  "homepage": "https://github.com/white-dragon-bevy/luban#readme",
   "packageManager": "pnpm@10.15.0"
 }
