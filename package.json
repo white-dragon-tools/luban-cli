@@ -1,5 +1,5 @@
 {
-  "name": "@white-dragon-bevy/luban",
+  "name": "@white-dragon-bevy/luban-cli",
   "version": "0.8.0",
   "description": "Luban - Game configuration solution",
   "bin": {
