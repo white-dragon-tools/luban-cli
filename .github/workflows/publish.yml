@@ -40,7 +40,10 @@ jobs:
         if: github.event_name == 'release'
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
-          npm version $VERSION --no-git-tag-version
+          CURRENT=$(node -p "require('./package.json').version")
+          if [ "$VERSION" != "$CURRENT" ]; then
+            npm version $VERSION --no-git-tag-version
+          fi
 
       - name: Update version from input
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
