@@ -11,6 +11,7 @@ ReaderLib/**/Config
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
+*.tgz
 
 # Build results
 [Dd]ebug/

@@ -14,6 +14,7 @@
     "test:filter": "cd tests/Luban.IntegrationTests && dotnet test --filter",
     "test:watch": "cd tests/Luban.IntegrationTests && dotnet watch test",
     "build:test": "npm run build && npm run test",
+    "test:constructor": "cd tests/Luban.IntegrationTests && dotnet run --project ../../src/Luban/Luban.csproj -- --conf bin/Debug/net8.0/TestData/constructor_validator/schema/luban.conf -t test -d json --validationFailAsError -x json.outputDataDir=../../TestData/constructor_validator/output",
     "format": "cd src && dotnet format --severity error -v n",
     "clean": "cd src && dotnet clean Luban.sln && cd ../tests/Luban.IntegrationTests && dotnet clean",
     "luau:install": "scripts/install-luau.bat",

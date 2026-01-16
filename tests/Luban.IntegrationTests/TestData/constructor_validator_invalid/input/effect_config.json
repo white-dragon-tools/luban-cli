@@ -1,0 +1,14 @@
+[
+  {
+    "effectId": 1,
+    "triggerType": "DamageTrigger"
+  },
+  {
+    "effectId": 2,
+    "triggerType": "HealTrigger"
+  },
+  {
+    "effectId": 3,
+    "triggerType": "BaseTrigger"
+  }
+]

@@ -1,0 +1,92 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+*.dll
+*.exe
+*.pdb
+*.obj
+*.o
+*.so
+*.dylib
+*.a
+*.lib
+*.log
+bin/
+obj/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# GitHub
+.github/
+
+# IDE
+.idea/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sln.docstates
+.vs/
+.DS_Store
+
+# Test files
+roblox-ts/src/types/configs/
+roblox-ts/out/
+roblox-ts/.rojo/
+test/
+test_mini/
+simple_test/
+enum_test/
+test_codebuild/
+demo/
+
+# Documentation (except README)
+docs/
+*.md
+!README.md
+!README_EN.md
+!CHANGELOG.md
+!CONTRIBUTING.md
+!CLAUDE.md
+
+# Config files (except roblox.xml)
+*.conf
+*.toml
+*.yaml
+*.yml
+!roblox-ts/configs/defines/roblox.xml
+
+# Scripts and tools
+scripts/
+tools/
+*.sln
+*.csproj
+*.props
+*.targets
+
+# Lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Coverage
+coverage/
+*.lcov
+
+# Misc
+.cache/
+temp/
+tmp/
+*.tmp
+bak/
+
+# Repo (luban source code)
+repo/
+
+# Source directories (only release build should be published)
+src/Luban/!**/bin/Release/

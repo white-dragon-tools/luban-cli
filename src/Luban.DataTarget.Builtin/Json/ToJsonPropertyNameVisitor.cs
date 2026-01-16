@@ -54,12 +54,12 @@ public class ToJsonPropertyNameVisitor : IDataFuncVisitor<string>
 
     public string Accept(DFloat type)
     {
-        throw new NotSupportedException();
+        return type.Value.ToString();
     }
 
     public string Accept(DDouble type)
     {
-        throw new NotSupportedException();
+        return type.Value.ToString();
     }
 
     public string Accept(DEnum type)

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <bean name="BaseTrigger" alias="TriggerBase">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+  </bean>
+
+  <bean name="DamageTrigger" parent="BaseTrigger">
+    <var name="damage" type="int"/>
+  </bean>
+
+  <bean name="HealTrigger" parent="BaseTrigger">
+    <var name="healAmount" type="int"/>
+  </bean>
+
+  <bean name="BuffTrigger" parent="BaseTrigger">
+    <var name="buffId" type="int"/>
+    <var name="duration" type="int"/>
+  </bean>
+
+  <bean name="EffectConfig">
+    <var name="effectId" type="int"/>
+    <var name="triggerType" type="string#(constructor=BaseTrigger)"/>
+  </bean>
+
+  <table name="TbEffectConfig" value="EffectConfig" input="*@effect_config.json"/>
+</root>
