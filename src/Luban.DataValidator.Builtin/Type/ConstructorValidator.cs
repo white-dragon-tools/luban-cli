@@ -43,18 +43,29 @@ public class ConstructorValidator : DataValidatorBase
         }
 
         var assembly = field.Assembly;
+        DefBean baseBean;
+
+        // 尝试直接查找
         var baseType = assembly.GetDefType(baseBeanName);
+
+        // 如果找不到，尝试在当前模块中查找
+        if (baseType == null)
+        {
+            var currentModule = field.HostType.Namespace;
+            baseType = assembly.GetDefType(currentModule, baseBeanName);
+        }
 
         if (baseType == null)
         {
             throw new Exception($"field:{field} constructor 基类 '{baseBeanName}' 不存在");
         }
 
-        if (baseType is not DefBean baseBean)
+        if (baseType is not DefBean)
         {
             throw new Exception($"field:{field} constructor '{baseBeanName}' 不是 Bean 类型");
         }
 
+        baseBean = (DefBean)baseType;
         _baseBean = baseBean;
 
         // 收集所有有效类型名称（基类及其所有子类）
@@ -89,6 +100,12 @@ public class ConstructorValidator : DataValidatorBase
 
         var assembly = GenerationContext.Current.Assembly;
         var targetType = assembly.GetDefType(beanName);
+
+        // 如果找不到，尝试在基类所在的模块中查找
+        if (targetType == null)
+        {
+            targetType = assembly.GetDefType(_baseBean.Namespace, beanName);
+        }
 
         if (targetType == null)
         {

@@ -17,6 +17,12 @@ Luban 提供了多种内置验证器，用于在配置加载时验证数据的�
 #### 配置方式
 在 bean 字段的类型定义中使用 `#(constructor=BaseTypeName)` 语法。
 
+**基类名称支持两种格式：**
+- **简化名称**：`constructor=BaseTrigger` - 在当前模块中查找
+- **完整名称**：`constructor=constructor.BaseTrigger` - 使用完整的 `module.TypeName` 格式
+
+**推荐使用简化名称**，更简洁易读。
+
 #### Schema 示例
 ```xml
 <bean name="BaseTrigger">
@@ -34,8 +40,13 @@ Luban 提供了多种内置验证器，用于在配置加载时验证数据的�
 
 <bean name="SkillConfig">
     <var name="skillId" type="int"/>
-    <!-- triggerType 必须是 BaseTrigger 或其子类的名称 -->
+    <!-- 使用简化名称（推荐） -->
     <var name="triggerType" type="string#(constructor=BaseTrigger)"/>
+</bean>
+
+<!-- 或者使用完整名称（不推荐） -->
+<bean name="AnotherConfig">
+    <var name="triggerType" type="string#(constructor=module.submodule.BaseTrigger)"/>
 </bean>
 ```
 
@@ -63,7 +74,7 @@ Luban 提供了多种内置验证器，用于在配置加载时验证数据的�
 
 #### 验证规则
 - 字段值**不能为空**
-- 字段值**必须是已定义的 Bean 类型名称**
+- 字段值**必须是已定义的 Bean 类型名称**（支持简化名称或完整名称）
 - 该 Bean 类型**必须是指定基类的子类或基类本身**
 - 类型名称**区分大小写**（精确匹配）
 - **必须使用类型名**，不支持别名
