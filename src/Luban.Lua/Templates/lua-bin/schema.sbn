@@ -59,6 +59,8 @@ local function InitTypes(methods)
             o.{{field.name}} = {{deserialize ('bs.' + field.name) field.ctype}}
             {{~else if field.ctype.is_collection && field.ctype.element_type.is_bean~}}
             o.{{field.name}} = {{deserialize ('bs.' + field.name) field.ctype}}
+            {{~else if has_constructor_validator field~}}
+            o.{{field.name}} = methods.getClass(bs.{{field.name}})
             {{~end~}}
         {{~end~}}
             setmetatable(o, class)

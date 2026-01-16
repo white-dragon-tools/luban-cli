@@ -17,12 +17,89 @@
 - ✅ 支持 Flamework Reflect ID 集成
 - ✅ 扩展字符串枚举类型
 - ✅ 支持工厂函数模式
+- ✅ 新增 `constructor` 验证器，验证类型继承关系
 
 ---
 
 ## 特性详解
 
-### 1. 工厂函数 (ObjectFactory)
+### 1. Constructor 验证器
+
+#### 使用场景
+当字段值是一个类型名称字符串，需要确保该类型存在并且是指定基类的子类时使用。例如：
+- 技能触发器类型（`DamageTrigger`、`HealTrigger` 等）
+- 效果类型（`BuffEffect`、`DamageEffect` 等）
+- 任何需要多态配置的场景
+
+#### 配置方式
+在 bean 字段的类型定义中使用 `#(constructor=BaseTypeName)` 语法。
+
+#### Schema 示例
+```xml
+<bean name="BaseTrigger">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+</bean>
+
+<bean name="DamageTrigger" parent="BaseTrigger">
+    <var name="damage" type="int"/>
+</bean>
+
+<bean name="HealTrigger" parent="BaseTrigger">
+    <var name="healAmount" type="int"/>
+</bean>
+
+<bean name="SkillConfig">
+    <var name="skillId" type="int"/>
+    <!-- triggerType 必须是 BaseTrigger 或其子类的名称 -->
+    <var name="triggerType" type="string#(constructor=BaseTrigger)"/>
+</bean>
+```
+
+#### 数据示例
+```json
+[
+  {
+    "skillId": 1,
+    "triggerType": "DamageTrigger"  // ✅ 有效
+  },
+  {
+    "skillId": 2,
+    "triggerType": "HealTrigger"     // ✅ 有效
+  },
+  {
+    "skillId": 3,
+    "triggerType": "InvalidTrigger"  // ❌ 验证失败
+  }
+]
+```
+
+#### 验证规则
+- 字段值不能为空
+- 字段值必须是已定义的 Bean 类型名称
+- 该 Bean 类型必须是指定基类的子类或基类本身
+- 类型名称区分大小写（精确匹配）
+- 必须使用类型名，不支持别名
+
+#### Lua 代码生成
+对于使用 `constructor` 验证器的字段，生成的 Lua 代码会自动使用 `methods.getClass()` 将类型名称字符串转换为类引用：
+
+```lua
+class._deserialize = function(bs)
+    local o = table.clone(bs)
+    -- 自动将 triggerType 字符串转换为类引用
+    o.triggerType = methods.getClass(bs.triggerType)
+    setmetatable(o, class)
+    return o
+end
+```
+
+#### 详细文档
+更多使用说明请参阅：[数据验证器文档](./docs/VALIDATORS.md)
+
+---
+
+### 2. 工厂函数 (ObjectFactory)
 
 #### 使用场景
 当需要从同一份配置数据创建多个独立的对象实例时使用。例如：
@@ -73,7 +150,7 @@ local effect2 = config.effect()
 - 每次调用返回新的对象副本，互不影响
 - 只对字段级别生效，不影响整个 bean
 
-### 2. Flamework Reflect ID
+### 3. Flamework Reflect ID
 
 #### 使用场景
 当配置数据需要转换为特定的类实例时使用。例如：
@@ -134,7 +211,7 @@ local config = runtime.createInstance(
 - 不需要类满足特定的接口或基类要求
 
 
-### 3. TypeScript 引用定位
+### 4. TypeScript 引用定位
 
 #### 使用场景
 当生成的 TypeScript 定义文件需要引用项目中已有的类型时使用。例如：
@@ -189,7 +266,7 @@ export const TbConfig: GameConfig;
 - 生成的容器类型取决于 Luban 的表类型（map/list/singleton）
 - 多个 table 引用同一模块的不同类型时，import 语句会自动合并 
 
-### 4. 字符串枚举类型
+### 5. 字符串枚举类型
 
 #### 使用场景
 当枚举值需要使用字符串而不是数字时使用。例如：
@@ -355,6 +432,9 @@ npm run test:verbose
 
 # 运行特定测试
 npm run test:filter "DisplayName~basic_types"
+
+# 测试 constructor 验证器
+npm run test:constructor
 ```
 
 ### 代码格式化

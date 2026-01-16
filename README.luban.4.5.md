@@ -37,6 +37,8 @@ luban标准化了游戏配置开发工作流，可以极大提升策划和程序
 - [官方文档](https://www.datable.cn/)
 - [快速上手](https://www.datable.cn/docs/beginner/quickstart)
 - **示例项目** ([github](https://github.com/focus-creative-games/luban_examples)) ([gitee](https://gitee.com/focus-creative-games/luban_examples))
+- [数据验证器文档](./docs/VALIDATORS.md) - 内置验证器使用说明（constructor、ref、path、range 等）
+- [Luau 集成文档](./docs/LUAU_INTEGRATION.md) - Luau 静态分析集成说明
 
 ## 支持与联系
 

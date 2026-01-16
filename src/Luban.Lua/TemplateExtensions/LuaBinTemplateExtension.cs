@@ -18,8 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Luban.DataValidator.Builtin.Type;
+using Luban.Defs;
 using Luban.Lua.TypVisitors;
 using Luban.Types;
+using Luban.Validator;
 using Scriban.Runtime;
 
 namespace Luban.Lua.TemplateExtensions;
@@ -29,5 +32,10 @@ public class LuaBinTemplateExtension : ScriptObject
     public static string Deserialize(string bufName, TType type)
     {
         return type.Apply(LuaUnderlyingDeserializeVisitor.Ins, bufName);
+    }
+
+    public static bool HasConstructorValidator(DefField field)
+    {
+        return field.CType.Validators.Any(v => v is ConstructorValidator);
     }
 }

@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Luban.Core\Luban.Core.csproj" />
+      <ProjectReference Include="..\Luban.DataValidator.Builtin\Luban.DataValidator.Builtin.csproj" />
     </ItemGroup>
 
     <ItemGroup>
