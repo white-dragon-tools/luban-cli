@@ -1,0 +1,13 @@
+[
+  {
+    "boolVal": true,
+    "byteVal": 255,
+    "shortVal": 1000,
+    "intVal": 100000,
+    "longVal": 9999999999,
+    "floatVal": 3.14,
+    "doubleVal": 3.141592653589793,
+    "stringVal": "hello world",
+    "datetimeVal": "2024-01-01 00:00:00"
+  }
+]

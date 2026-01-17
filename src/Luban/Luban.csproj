@@ -53,6 +53,7 @@
       <ProjectReference Include="..\Luban.DataTarget.Builtin\Luban.DataTarget.Builtin.csproj" />
       <ProjectReference Include="..\Luban.DataValidator.Builtin\Luban.DataValidator.Builtin.csproj" />
       <ProjectReference Include="..\Luban.Lua\Luban.Lua.csproj" />
+      <ProjectReference Include="..\Luban.JsonSchema\Luban.JsonSchema.csproj" />
       <ProjectReference Include="..\Luban.Schema.Builtin\Luban.Schema.Builtin.csproj" />
     </ItemGroup>
 

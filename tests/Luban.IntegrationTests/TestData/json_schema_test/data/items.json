@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Iron Sword",
+    "type": 1,
+    "quality": "common",
+    "flags": 3,
+    "price": 100,
+    "description": "A basic iron sword"
+  },
+  {
+    "id": 2,
+    "name": "Dragon Armor",
+    "type": 2,
+    "quality": "legendary",
+    "flags": 9,
+    "price": 10000,
+    "description": null
+  }
+]

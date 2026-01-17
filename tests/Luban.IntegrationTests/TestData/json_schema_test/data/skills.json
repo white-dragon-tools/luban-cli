@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Fireball",
+    "cooldown": 5.0,
+    "effect": {
+      "$type": "DamageEffect",
+      "id": 101,
+      "duration": 0,
+      "damage": 100,
+      "damageType": "fire"
+    },
+    "effects": [
+      {
+        "$type": "DamageEffect",
+        "id": 102,
+        "duration": 3.0,
+        "damage": 20,
+        "damageType": "fire"
+      },
+      {
+        "$type": "BuffEffect",
+        "id": 103,
+        "duration": 10.0,
+        "buffType": "burn",
+        "value": 5
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Heal",
+    "cooldown": 10.0,
+    "effect": {
+      "$type": "HealEffect",
+      "id": 201,
+      "duration": 0,
+      "healAmount": 200
+    },
+    "effects": []
+  }
+]

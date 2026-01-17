@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- ========== 基础类型测试 ========== -->
+  <bean name="BasicTypes">
+    <var name="boolVal" type="bool"/>
+    <var name="byteVal" type="byte"/>
+    <var name="shortVal" type="short"/>
+    <var name="intVal" type="int"/>
+    <var name="longVal" type="long"/>
+    <var name="floatVal" type="float"/>
+    <var name="doubleVal" type="double"/>
+    <var name="stringVal" type="string"/>
+    <var name="datetimeVal" type="datetime"/>
+  </bean>
+
+  <!-- ========== 可空类型测试 ========== -->
+  <bean name="NullableTypes">
+    <var name="id" type="int"/>
+    <var name="optionalInt" type="int?"/>
+    <var name="optionalString" type="string?"/>
+    <var name="optionalFloat" type="float?"/>
+  </bean>
+
+  <!-- ========== 容器类型测试 ========== -->
+  <bean name="ContainerTypes">
+    <var name="intList" type="list,int"/>
+    <var name="stringSet" type="set,string"/>
+    <var name="intArray" type="array,int"/>
+    <var name="stringIntMap" type="map,string,int"/>
+    <var name="intStringMap" type="map,int,string"/>
+  </bean>
+
+  <!-- ========== 嵌套容器测试 ========== -->
+  <bean name="NestedContainers">
+    <var name="listOfList" type="list,list,int"/>
+    <var name="mapOfList" type="map,string,list,int"/>
+  </bean>
+
+  <!-- ========== 整数枚举 ========== -->
+  <enum name="ItemType">
+    <var name="Weapon" value="1"/>
+    <var name="Armor" value="2"/>
+    <var name="Consumable" value="3"/>
+    <var name="Material" value="4"/>
+  </enum>
+
+  <!-- ========== 字符串枚举 ========== -->
+  <enum name="Quality">
+    <var name="Common" value="common"/>
+    <var name="Rare" value="rare"/>
+    <var name="Epic" value="epic"/>
+    <var name="Legendary" value="legendary"/>
+  </enum>
+
+  <!-- ========== Flags 枚举 ========== -->
+  <enum name="ItemFlags" flags="true">
+    <var name="None" value="0"/>
+    <var name="Tradable" value="1"/>
+    <var name="Stackable" value="2"/>
+    <var name="Destroyable" value="4"/>
+    <var name="Bindable" value="8"/>
+  </enum>
+
+  <!-- ========== 使用枚举的 Bean ========== -->
+  <bean name="Item">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="type" type="ItemType"/>
+    <var name="quality" type="Quality"/>
+    <var name="flags" type="ItemFlags"/>
+    <var name="price" type="int"/>
+    <var name="description" type="string?"/>
+  </bean>
+
+  <!-- ========== 多态类型测试 ========== -->
+  <bean name="Effect">
+    <var name="id" type="int"/>
+    <var name="duration" type="float"/>
+  </bean>
+
+  <bean name="DamageEffect" parent="Effect">
+    <var name="damage" type="int"/>
+    <var name="damageType" type="string"/>
+  </bean>
+
+  <bean name="HealEffect" parent="Effect">
+    <var name="healAmount" type="int"/>
+  </bean>
+
+  <bean name="BuffEffect" parent="Effect">
+    <var name="buffType" type="string"/>
+    <var name="value" type="int"/>
+  </bean>
+
+  <!-- ========== 引用多态类型的 Bean ========== -->
+  <bean name="Skill">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="cooldown" type="float"/>
+    <var name="effect" type="Effect"/>
+    <var name="effects" type="list,Effect"/>
+  </bean>
+
+  <!-- ========== 嵌套 Bean 测试 ========== -->
+  <bean name="Position">
+    <var name="x" type="float"/>
+    <var name="y" type="float"/>
+    <var name="z" type="float"/>
+  </bean>
+
+  <bean name="Transform">
+    <var name="position" type="Position"/>
+    <var name="rotation" type="Position"/>
+    <var name="scale" type="Position"/>
+  </bean>
+
+  <bean name="GameObject">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="transform" type="Transform"/>
+    <var name="tags" type="list,string"/>
+  </bean>
+
+  <!-- ========== Validator 测试 ========== -->
+  <bean name="ValidatedItem">
+    <var name="id" type="int" tags="range=1,99999"/>
+    <var name="name" type="string" tags="size=1,50"/>
+    <var name="icon" type="string" tags="regex=^icons/.+\.png$"/>
+    <var name="categoryId" type="int" tags="ref=TbItem"/>
+    <var name="tags" type="list,string" tags="size=0,10"/>
+    <var name="score" type="float" tags="range=0.0,100.0"/>
+    <var name="resourcePath" type="string" tags="path=unity"/>
+  </bean>
+
+  <!-- ========== 可空 Bean 引用测试 ========== -->
+  <bean name="NullableBeanRef">
+    <var name="id" type="int"/>
+    <var name="optionalPosition" type="Position?"/>
+    <var name="optionalEffect" type="Effect?"/>
+  </bean>
+
+  <!-- ========== 表定义 ========== -->
+  <table name="TbBasicTypes" value="BasicTypes" input="*@basic.json"/>
+  <table name="TbItem" value="Item" index="id" input="*@items.json"/>
+  <table name="TbSkill" value="Skill" index="id" input="*@skills.json"/>
+  <table name="TbGameObject" value="GameObject" index="id" input="*@objects.json"/>
+</root>
