@@ -20,6 +20,7 @@
 
 using Luban.CodeTarget;
 using Luban.Lua.TemplateExtensions;
+using Luban.Utils;
 using Scriban;
 
 namespace Luban.Lua.CodeTarget;
@@ -31,5 +32,50 @@ public class LuaBinCodeTarget : LuaCodeTargetBase
     {
         base.OnCreateTemplateContext(ctx);
         ctx.PushGlobal(new LuaBinTemplateExtension());
+    }
+
+    public override void Handle(GenerationContext ctx, OutputFileManifest manifest)
+    {
+        base.Handle(ctx, manifest);
+
+        string outputSchemaFileName = EnvManager.Current.GetOptionOrDefault(Name, $"outputFile", true, DefaultOutputFileName);
+        string dtsFileName = outputSchemaFileName.Replace(".lua", ".d.ts");
+        manifest.AddFile(CreateOutputFile(dtsFileName, GenerateSchemaDts()));
+    }
+
+    private static string GenerateSchemaDts()
+    {
+        return @"type deserializer = (item: unknown) => unknown
+
+export interface Methods{
+    getClass:(beanName: string)=> unknown,
+    readList:(cfg:Record<string, unknown>[],deserializer:deserializer)=>object,
+    readSet:(cfg:object[],deserializer:deserializer)=>object,
+    readMap:(cfg:Record<string, unknown>,deserializer:deserializer)=>object
+}
+
+
+export interface TableMeta {
+	name: string;
+	file: string;
+	mode: ""map"" | ""list"" | ""one"" | ""singleton"" | ""single"" | ""array"";
+	index?: string;
+	value_type: string;
+}
+
+
+export interface DeserializerBean   {
+    _deserialize: (data: unknown) => unknown
+}
+
+/** 初始化 */
+export function InitTypes(methods:Methods):{
+    /** class 类 */
+    beans: Map<string, DeserializerBean>,
+
+    /** 表元数据 */
+    tables: TableMeta[]
+
+}";
     }
 }
