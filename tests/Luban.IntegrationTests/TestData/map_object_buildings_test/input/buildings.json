@@ -1,0 +1,19 @@
+[
+  {
+    "id": "tower_1",
+    "name": "防御塔",
+    "stats": {
+      "AttackBase": 1,
+      "MaxHealthFinal": 1,
+      "HealthRegenBase": 1
+    }
+  },
+  {
+    "id": "barracks_1",
+    "name": "兵营",
+    "stats": {
+      "MaxHealthFinal": 500,
+      "DefenseBase": 10
+    }
+  }
+]

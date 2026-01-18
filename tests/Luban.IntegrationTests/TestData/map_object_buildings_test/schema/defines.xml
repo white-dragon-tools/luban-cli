@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <bean name="Building">
+    <var name="id" type="string"/>
+    <var name="name" type="string"/>
+    <var name="stats" type="map,string,int"/>
+  </bean>
+
+  <table name="TbBuilding" value="Building" input="*@buildings.json"/>
+</root>

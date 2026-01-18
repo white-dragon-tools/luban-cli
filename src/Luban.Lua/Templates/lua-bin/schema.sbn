@@ -42,6 +42,7 @@ local function InitTypes(methods)
         local class = methods.getClass('{{bean.full_name}}')
 {{~if bean.is_abstract_type~}}
         class._deserialize = function(bs)
+            if not bs then return nil end
             local __type__ = bs["$type"]
             {{~ for child in bean.hierarchy_not_abstract_children ~}}
             {{~ if for.first ~}}if{{~ else ~}}elseif{{~ end }} __type__ == "{{child.full_name}}" then
@@ -53,6 +54,7 @@ local function InitTypes(methods)
         end
 {{~else~}}
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
         {{~ for field in bean.hierarchy_export_fields ~}}
             {{~if field.ctype.is_bean~}}

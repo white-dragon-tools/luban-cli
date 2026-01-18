@@ -40,6 +40,7 @@ local function InitTypes(methods)
     do
         local class = methods.getClass('Item')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o

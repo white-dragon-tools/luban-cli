@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "name": "Magic Sword",
+    "stats": [
+      [
+        "AttackBase",
+        100
+      ],
+      [
+        "DefenseBase",
+        50
+      ],
+      [
+        "MaxHealthFinal",
+        200
+      ]
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Fire Staff",
+    "stats": [
+      [
+        "MagicPower",
+        150
+      ],
+      [
+        "ManaRegen",
+        25
+      ]
+    ]
+  }
+]

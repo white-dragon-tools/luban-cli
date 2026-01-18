@@ -40,6 +40,7 @@ local function InitTypes(methods)
     do
         local class = methods.getClass('AIBehavior')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local __type__ = bs["$type"]
 if __type__ == "MeleeAttack" then
                 return beans["MeleeAttack"]._deserialize(bs)
@@ -60,6 +61,7 @@ elseif __type__ == "DefenseBehavior" then
     do
         local class = methods.getClass('CombatBehavior')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local __type__ = bs["$type"]
 if __type__ == "MeleeAttack" then
                 return beans["MeleeAttack"]._deserialize(bs)
@@ -74,6 +76,7 @@ elseif __type__ == "RangedAttack" then
     do
         local class = methods.getClass('MeleeAttack')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o
@@ -83,6 +86,7 @@ elseif __type__ == "RangedAttack" then
     do
         local class = methods.getClass('RangedAttack')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o
@@ -92,6 +96,7 @@ elseif __type__ == "RangedAttack" then
     do
         local class = methods.getClass('DefenseBehavior')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o
@@ -101,6 +106,7 @@ elseif __type__ == "RangedAttack" then
     do
         local class = methods.getClass('MovementBehavior')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local __type__ = bs["$type"]
 if __type__ == "PatrolMovement" then
                 return beans["PatrolMovement"]._deserialize(bs)
@@ -115,6 +121,7 @@ elseif __type__ == "ChaseMovement" then
     do
         local class = methods.getClass('ChaseMovement')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o
@@ -124,6 +131,7 @@ elseif __type__ == "ChaseMovement" then
     do
         local class = methods.getClass('PatrolMovement')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o
@@ -133,6 +141,7 @@ elseif __type__ == "ChaseMovement" then
     do
         local class = methods.getClass('Enemy')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             o.behaviors = readArray(bs.behaviors, beans['AIBehavior']._deserialize)
             o.dropRewards = readArray(bs.dropRewards, beans['Reward']._deserialize)
@@ -144,6 +153,7 @@ elseif __type__ == "ChaseMovement" then
     do
         local class = methods.getClass('Quest')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             o.rewards = readArray(bs.rewards, beans['Reward']._deserialize)
             setmetatable(o, class)
@@ -154,6 +164,7 @@ elseif __type__ == "ChaseMovement" then
     do
         local class = methods.getClass('Reward')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local __type__ = bs["$type"]
 if __type__ == "CurrencyReward" then
                 return beans["CurrencyReward"]._deserialize(bs)
@@ -170,6 +181,7 @@ elseif __type__ == "ExpReward" then
     do
         local class = methods.getClass('CurrencyReward')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o
@@ -179,6 +191,7 @@ elseif __type__ == "ExpReward" then
     do
         local class = methods.getClass('ExpReward')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o
@@ -188,6 +201,7 @@ elseif __type__ == "ExpReward" then
     do
         local class = methods.getClass('ItemReward')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o
@@ -197,6 +211,7 @@ elseif __type__ == "ExpReward" then
     do
         local class = methods.getClass('Skill')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             o.effect = beans['SkillEffect']._deserialize(bs.effect)
             setmetatable(o, class)
@@ -207,6 +222,7 @@ elseif __type__ == "ExpReward" then
     do
         local class = methods.getClass('SkillEffect')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local __type__ = bs["$type"]
 if __type__ == "DamageEffect" then
                 return beans["DamageEffect"]._deserialize(bs)
@@ -223,6 +239,7 @@ elseif __type__ == "BuffEffect" then
     do
         local class = methods.getClass('BuffEffect')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o
@@ -232,6 +249,7 @@ elseif __type__ == "BuffEffect" then
     do
         local class = methods.getClass('DamageEffect')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o
@@ -241,6 +259,7 @@ elseif __type__ == "BuffEffect" then
     do
         local class = methods.getClass('HealEffect')
         class._deserialize = function(bs)
+            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o

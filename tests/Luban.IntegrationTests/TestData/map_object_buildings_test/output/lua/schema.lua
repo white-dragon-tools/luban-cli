@@ -25,7 +25,7 @@ local enums =
 
 local tables =
 {
-    { name='TbSkill', file='tbskill', mode='map', index='id', value_type='SkillConfig' },
+    { name='TbBuilding', file='tbbuilding', mode='map', index='id', value_type='Building' },
 }
 
 local function InitTypes(methods)
@@ -36,25 +36,13 @@ local function InitTypes(methods)
 
     local beans = {}
     do
-        local class = methods.getClass('EffectData')
+        local class = methods.getClass('Building')
         class._deserialize = function(bs)
-            if not bs then return nil end
             local o = table.clone(bs)
             setmetatable(o, class)
             return o
         end
-        beans['EffectData'] = class
-    end
-    do
-        local class = methods.getClass('SkillConfig')
-        class._deserialize = function(bs)
-            if not bs then return nil end
-            local o = table.clone(bs)
-            o.effect = beans['EffectData']._deserialize(bs.effect)
-            setmetatable(o, class)
-            return o
-        end
-        beans['SkillConfig'] = class
+        beans['Building'] = class
     end
 
 

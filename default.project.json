@@ -1,0 +1,6 @@
+{
+	"name": "luban-cli",
+	"tree": {
+		"$path": "index.lua"
+	}
+}

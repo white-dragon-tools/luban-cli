@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <bean name="ItemWithStats">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="stats" type="map,string,double"/>
+  </bean>
+
+  <bean name="ItemWithRequirements">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="requirements" type="map,int,int"/>
+  </bean>
+
+  <table name="TbItemObject" value="ItemWithStats" input="*@items_object.json"/>
+  <table name="TbItemArray" value="ItemWithRequirements" input="*@items_array.json"/>
+</root>

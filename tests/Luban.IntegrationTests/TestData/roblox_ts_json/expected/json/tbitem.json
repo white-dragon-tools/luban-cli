@@ -1,12 +1,4 @@
-{
-  "1": {
-    "id": 1,
-    "name": "Sword",
-    "price": 100
-  },
-  "2": {
-    "id": 2,
-    "name": "Shield",
-    "price": 150
-  }
-}
+[
+  {"id": 1, "name": "Sword", "price": 100},
+  {"id": 2, "name": "Shield", "price": 150}
+]

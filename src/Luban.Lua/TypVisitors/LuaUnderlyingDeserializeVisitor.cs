@@ -49,6 +49,6 @@ public class LuaUnderlyingDeserializeVisitor : DecoratorFuncVisitor<string, stri
 
     public override string Accept(TMap type, string x)
     {
-        return $"readMap({x}, {type.KeyType.Apply(LuaDeserializeMethodNameVisitor.Ins)}, {type.ValueType.Apply(LuaDeserializeMethodNameVisitor.Ins)})";
+        return $"readMap({x}, {type.ValueType.Apply(LuaDeserializeMethodNameVisitor.Ins)})";
     }
 }

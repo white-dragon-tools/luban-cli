@@ -1,0 +1,601 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "luban-schema",
+  "definitions": {
+    "ItemFlags": {
+      "type": "integer",
+      "enum": [
+        0,
+        1,
+        2,
+        4,
+        8
+      ],
+      "x-luban-enum": "ItemFlags",
+      "x-luban-flags": true,
+      "x-luban-enum-items": [
+        {
+          "name": "None",
+          "value": 0
+        },
+        {
+          "name": "Tradable",
+          "value": 1
+        },
+        {
+          "name": "Stackable",
+          "value": 2
+        },
+        {
+          "name": "Destroyable",
+          "value": 4
+        },
+        {
+          "name": "Bindable",
+          "value": 8
+        }
+      ]
+    },
+    "ItemType": {
+      "type": "integer",
+      "enum": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "x-luban-enum": "ItemType",
+      "x-luban-enum-items": [
+        {
+          "name": "Weapon",
+          "value": 1
+        },
+        {
+          "name": "Armor",
+          "value": 2
+        },
+        {
+          "name": "Consumable",
+          "value": 3
+        },
+        {
+          "name": "Material",
+          "value": 4
+        }
+      ]
+    },
+    "Quality": {
+      "type": "string",
+      "enum": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "x-luban-enum": "Quality",
+      "x-luban-enum-items": [
+        {
+          "name": "Common",
+          "value": "common"
+        },
+        {
+          "name": "Rare",
+          "value": "rare"
+        },
+        {
+          "name": "Epic",
+          "value": "epic"
+        },
+        {
+          "name": "Legendary",
+          "value": "legendary"
+        }
+      ]
+    },
+    "BasicTypes": {
+      "type": "object",
+      "properties": {
+        "boolVal": {
+          "type": "boolean"
+        },
+        "byteVal": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "shortVal": {
+          "type": "integer",
+          "minimum": -32768,
+          "maximum": 32767
+        },
+        "intVal": {
+          "type": "integer"
+        },
+        "longVal": {
+          "type": "integer"
+        },
+        "floatVal": {
+          "type": "number"
+        },
+        "doubleVal": {
+          "type": "number"
+        },
+        "stringVal": {
+          "type": "string"
+        },
+        "datetimeVal": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "boolVal",
+        "byteVal",
+        "shortVal",
+        "intVal",
+        "longVal",
+        "floatVal",
+        "doubleVal",
+        "stringVal",
+        "datetimeVal"
+      ],
+      "additionalProperties": false
+    },
+    "ContainerTypes": {
+      "type": "object",
+      "properties": {
+        "intList": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "stringSet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "intArray": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "stringIntMap": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "x-luban-key-type": "string"
+        },
+        "intStringMap": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-luban-key-type": "integer",
+          "propertyNames": {
+            "pattern": "^-?[0-9]+$"
+          }
+        }
+      },
+      "required": [
+        "intList",
+        "stringSet",
+        "intArray",
+        "stringIntMap",
+        "intStringMap"
+      ],
+      "additionalProperties": false
+    },
+    "Effect": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/DamageEffect"
+        },
+        {
+          "$ref": "#/definitions/HealEffect"
+        },
+        {
+          "$ref": "#/definitions/BuffEffect"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "$type"
+      }
+    },
+    "BuffEffect": {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "BuffEffect"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "duration": {
+          "type": "number"
+        },
+        "buffType": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "$type",
+        "id",
+        "duration",
+        "buffType",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "DamageEffect": {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "DamageEffect"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "duration": {
+          "type": "number"
+        },
+        "damage": {
+          "type": "integer"
+        },
+        "damageType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "id",
+        "duration",
+        "damage",
+        "damageType"
+      ],
+      "additionalProperties": false
+    },
+    "HealEffect": {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "HealEffect"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "duration": {
+          "type": "number"
+        },
+        "healAmount": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "$type",
+        "id",
+        "duration",
+        "healAmount"
+      ],
+      "additionalProperties": false
+    },
+    "GameObject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "transform": {
+          "$ref": "#/definitions/Transform"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "transform",
+        "tags"
+      ],
+      "additionalProperties": false
+    },
+    "Item": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/ItemType"
+        },
+        "quality": {
+          "$ref": "#/definitions/Quality"
+        },
+        "flags": {
+          "$ref": "#/definitions/ItemFlags"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type",
+        "quality",
+        "flags",
+        "price"
+      ],
+      "additionalProperties": false
+    },
+    "NestedContainers": {
+      "type": "object",
+      "properties": {
+        "listOfList": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        },
+        "mapOfList": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "x-luban-key-type": "string"
+        }
+      },
+      "required": [
+        "listOfList",
+        "mapOfList"
+      ],
+      "additionalProperties": false
+    },
+    "NullableBeanRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "optionalPosition": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/Position"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "optionalEffect": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/Effect"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "NullableTypes": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "optionalInt": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "optionalString": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "optionalFloat": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "Position": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "z": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "additionalProperties": false
+    },
+    "Skill": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "cooldown": {
+          "type": "number"
+        },
+        "effect": {
+          "$ref": "#/definitions/Effect"
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Effect"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "cooldown",
+        "effect",
+        "effects"
+      ],
+      "additionalProperties": false
+    },
+    "Transform": {
+      "type": "object",
+      "properties": {
+        "position": {
+          "$ref": "#/definitions/Position"
+        },
+        "rotation": {
+          "$ref": "#/definitions/Position"
+        },
+        "scale": {
+          "$ref": "#/definitions/Position"
+        }
+      },
+      "required": [
+        "position",
+        "rotation",
+        "scale"
+      ],
+      "additionalProperties": false
+    },
+    "ValidatedItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99999
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50
+        },
+        "icon": {
+          "type": "string",
+          "pattern": "^icons/.+.png$"
+        },
+        "categoryId": {
+          "type": "integer",
+          "x-luban-ref": "TbItem"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 0,
+          "maxItems": 10
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "resourcePath": {
+          "type": "string",
+          "x-luban-path": "unity"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "icon",
+        "categoryId",
+        "tags",
+        "score",
+        "resourcePath"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "tables": {
+    "TbBasicTypes": {
+      "valueType": "BasicTypes",
+      "mode": "map",
+      "index": "boolVal",
+      "inputFiles": [
+        "*@basic.json"
+      ]
+    },
+    "TbItem": {
+      "valueType": "Item",
+      "mode": "map",
+      "index": "id",
+      "inputFiles": [
+        "*@items.json"
+      ]
+    },
+    "TbSkill": {
+      "valueType": "Skill",
+      "mode": "map",
+      "index": "id",
+      "inputFiles": [
+        "*@skills.json"
+      ]
+    },
+    "TbGameObject": {
+      "valueType": "GameObject",
+      "mode": "map",
+      "index": "id",
+      "inputFiles": [
+        "*@objects.json"
+      ]
+    }
+  }
+}
