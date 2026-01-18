@@ -1,13 +1,13 @@
 {
   "name": "@white-dragon-bevy/luban-cli",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Luban - Game configuration solution",
   "bin": {
     "luban": "./bin/luban.js"
   },
   "scripts": {
     "build": "cd src && dotnet build Luban.sln",
-    "luban":"dotnet src/Luban/bin/Release/net8.0/Luban.Core.dll",
+    "luban": "dotnet src/Luban/bin/Release/net8.0/Luban.Core.dll",
     "build:release": "cd src && dotnet build Luban.sln -c Release",
     "test": "cd tests/Luban.IntegrationTests && dotnet test",
     "test:verbose": "cd tests/Luban.IntegrationTests && dotnet test --logger \"console;verbosity=detailed\"",
@@ -21,11 +21,16 @@
     "luau:check": "luau-analyze tests/Luban.IntegrationTests/TestData/*/expected/lua/*.lua",
     "luau:check:strict": "luau-analyze --typechecking-mode=strict tests/Luban.IntegrationTests/TestData/*/expected/lua/*.lua"
   },
-  "files":[
+  "files": [
     "bin/",
     "src/Luban/bin/Release/net8.0/"
   ],
-  "keywords": ["luban", "game", "configuration", "code-generation"],
+  "keywords": [
+    "luban",
+    "game",
+    "configuration",
+    "code-generation"
+  ],
   "author": "",
   "license": "ISC",
   "repository": {
