@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 字符串枚举 - 测试使用数字索引 -->
+  <enum name="QualityType">
+    <var name="Common" value="common"/>
+    <var name="Uncommon" value="uncommon"/>
+    <var name="Rare" value="rare"/>
+    <var name="Epic" value="epic"/>
+  </enum>
+
+  <bean name="Item">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="quality" type="QualityType"/>
+  </bean>
+
+  <table name="TbItem" value="Item" input="*@items.json"/>
+</root>

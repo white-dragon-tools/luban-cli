@@ -101,6 +101,15 @@ public class DefEnum : DefTypeBase
             {
                 return item.IntValue;
             }
+            // For string enums, also support numeric index (0, 1, 2, ...)
+            if (int.TryParse(name, out var index))
+            {
+                var itemByIndex = Items.FirstOrDefault(i => i.IntValue == index);
+                if (itemByIndex != null)
+                {
+                    return itemByIndex.IntValue;
+                }
+            }
             throw new Exception($"'{name}' 不是enum:'{FullName}'的有效枚举值");
         }
         else if (int.TryParse(name, out value))
