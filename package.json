@@ -23,7 +23,10 @@
   },
   "files": [
     "bin/",
-    "src/Luban/bin/Release/net8.0/"
+    "src/Luban/bin/Release/net8.0/",
+    "index.d.ts",
+    "index.lua",
+    "default.project.json"
   ],
   "keywords": [
     "luban",
