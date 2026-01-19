@@ -29,6 +29,15 @@ namespace Luban.Lua.TemplateExtensions;
 
 public class LuaBinTemplateExtension : ScriptObject
 {
+    // Built-in Roblox native type mapping
+    private static readonly Dictionary<string, string> RobloxNativeTypes = new()
+    {
+        { "Vector2", "Vector2.new" },
+        { "Vector3", "Vector3.new" },
+        { "Color3", "Color3.new" },
+        { "CFrame", "CFrame.new" },
+    };
+
     public static string Deserialize(string bufName, TType type, DefField field = null)
     {
         var visitor = LuaUnderlyingDeserializeVisitor.Ins;
@@ -51,5 +60,41 @@ public class LuaBinTemplateExtension : ScriptObject
     public static bool HasObjectFactory(DefField field)
     {
         return field.HasTag("ObjectFactory");
+    }
+
+    public static bool IsRobloxNativeType(DefBean bean)
+    {
+        return RobloxNativeTypes.ContainsKey(bean.Name);
+    }
+
+    public static string GetRobloxConstructor(DefBean bean)
+    {
+        return RobloxNativeTypes.TryGetValue(bean.Name, out var ctor) ? ctor : null;
+    }
+
+    // Generate deserialization expression for Roblox native types
+    public static string DeserializeRobloxNative(DefBean bean, string varName)
+    {
+        var ctor = GetRobloxConstructor(bean);
+        // Use HierarchyExportFields to include inherited fields
+        var fields = bean.HierarchyExportFields;
+        var args = string.Join(", ", fields.Select(f =>
+            DeserializeRobloxField(f, $"{varName}.{f.Name}")));
+        return $"{ctor}({args})";
+    }
+
+    private static string DeserializeRobloxField(DefField field, string expr)
+    {
+        if (field.CType is TBean beanType && IsRobloxNativeType(beanType.DefBean))
+        {
+            var nativeExpr = DeserializeRobloxNative(beanType.DefBean, expr);
+            // Handle nullable nested Roblox types
+            if (beanType.IsNullable)
+            {
+                return $"({expr} and {nativeExpr} or nil)";
+            }
+            return nativeExpr;
+        }
+        return expr;
     }
 }

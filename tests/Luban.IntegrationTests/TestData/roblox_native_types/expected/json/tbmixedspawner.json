@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "spawnOffset": {
+      "Position": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "LookVector": {
+        "X": 0,
+        "Y": 0,
+        "Z": 1
+      }
+    },
+    "spawnPosition": {
+      "X": 10,
+      "Y": 5,
+      "Z": 10
+    }
+  },
+  {
+    "id": 2,
+    "spawnOffset": {
+      "Position": {
+        "X": 5,
+        "Y": 0,
+        "Z": 5
+      },
+      "LookVector": {
+        "X": 1,
+        "Y": 0,
+        "Z": 0
+      }
+    }
+  }
+]

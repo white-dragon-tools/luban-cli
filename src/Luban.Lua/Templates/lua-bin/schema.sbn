@@ -40,7 +40,12 @@ local function InitTypes(methods)
 {{~ for bean in __beans ~}}
     do
         local class = methods.getClass('{{bean.full_name}}')
-{{~if bean.is_abstract_type~}}
+{{~if is_roblox_native_type bean~}}
+        class._deserialize = function(bs)
+            if not bs then return nil end
+            return {{deserialize_roblox_native bean 'bs'}}
+        end
+{{~else if bean.is_abstract_type~}}
         class._deserialize = function(bs)
             if not bs then return nil end
             local __type__ = bs["$type"]

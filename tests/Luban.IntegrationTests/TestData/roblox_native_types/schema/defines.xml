@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- Roblox native types -->
+  <bean name="Vector2">
+    <var name="X" type="float"/>
+    <var name="Y" type="float"/>
+  </bean>
+
+  <bean name="Vector3">
+    <var name="X" type="float"/>
+    <var name="Y" type="float"/>
+    <var name="Z" type="float"/>
+  </bean>
+
+  <bean name="Color3">
+    <var name="R" type="float"/>
+    <var name="G" type="float"/>
+    <var name="B" type="float"/>
+  </bean>
+
+  <bean name="CFrame">
+    <var name="Position" type="Vector3"/>
+    <var name="LookVector" type="Vector3"/>
+  </bean>
+
+  <!-- Bean with Roblox native type fields -->
+  <bean name="Item">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="position" type="Vector3"/>
+    <var name="color" type="Color3"/>
+  </bean>
+
+  <!-- Bean with nested CFrame (which contains Vector3) -->
+  <bean name="Entity">
+    <var name="id" type="int"/>
+    <var name="transform" type="CFrame"/>
+  </bean>
+
+  <!-- Bean with array of Vector3 -->
+  <bean name="Path">
+    <var name="id" type="int"/>
+    <var name="waypoints" type="list,Vector3"/>
+  </bean>
+
+  <!-- Bean with nullable Roblox native type fields -->
+  <bean name="Spawner">
+    <var name="id" type="int"/>
+    <var name="spawnPosition" type="CFrame?"/>
+    <var name="targetPosition" type="Vector3?"/>
+    <var name="highlightColor" type="Color3?"/>
+  </bean>
+
+  <!-- Bean with mixed nullable and non-nullable Roblox native type fields -->
+  <bean name="MixedSpawner">
+    <var name="id" type="int"/>
+    <var name="spawnOffset" type="CFrame"/>
+    <var name="spawnPosition" type="Vector3?"/>
+  </bean>
+
+  <table name="TbItem" value="Item" input="*@items.json"/>
+  <table name="TbEntity" value="Entity" input="*@entities.json"/>
+  <table name="TbPath" value="Path" input="*@paths.json"/>
+  <table name="TbSpawner" value="Spawner" input="*@spawners.json"/>
+  <table name="TbMixedSpawner" value="MixedSpawner" input="*@mixed_spawners.json"/>
+</root>

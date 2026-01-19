@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "spawnPosition": {
+      "Position": {
+        "X": 0,
+        "Y": 10,
+        "Z": 0
+      },
+      "LookVector": {
+        "X": 0,
+        "Y": 0,
+        "Z": 1
+      }
+    },
+    "targetPosition": {
+      "X": 100,
+      "Y": 0,
+      "Z": 100
+    },
+    "highlightColor": {
+      "R": 1,
+      "G": 0,
+      "B": 0
+    }
+  },
+  {
+    "id": 2
+  },
+  {
+    "id": 3,
+    "spawnPosition": {
+      "Position": {
+        "X": 50,
+        "Y": 5,
+        "Z": 50
+      },
+      "LookVector": {
+        "X": 1,
+        "Y": 0,
+        "Z": 0
+      }
+    },
+    "highlightColor": {
+      "R": 0,
+      "G": 1,
+      "B": 0
+    }
+  }
+]

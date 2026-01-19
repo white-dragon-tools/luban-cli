@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 using Luban.Defs;
+using Luban.Lua.TemplateExtensions;
 using Luban.Types;
 using Luban.TypeVisitors;
 
@@ -33,6 +34,23 @@ public class LuaUnderlyingDeserializeVisitor : DecoratorFuncVisitor<string, stri
     public override string DoAccept(TType type, string x)
     {
         return $"{type.Apply(LuaDeserializeMethodNameVisitor.Ins)}({x})";
+    }
+
+    public override string Accept(TBean type, string x)
+    {
+        // Check if this is a Roblox native type
+        if (LuaBinTemplateExtension.IsRobloxNativeType(type.DefBean))
+        {
+            var nativeExpr = LuaBinTemplateExtension.DeserializeRobloxNative(type.DefBean, x);
+            // Handle nullable types: check for nil before accessing fields
+            if (type.IsNullable)
+            {
+                return $"({x} and {nativeExpr} or nil)";
+            }
+            return nativeExpr;
+        }
+        // Default behavior: use beans table deserializer
+        return $"beans['{type.DefBean.FullName}']._deserialize({x})";
     }
 
     public override string Accept(TArray type, string x)
