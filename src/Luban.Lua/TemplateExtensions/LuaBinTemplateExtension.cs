@@ -29,13 +29,27 @@ namespace Luban.Lua.TemplateExtensions;
 
 public class LuaBinTemplateExtension : ScriptObject
 {
-    public static string Deserialize(string bufName, TType type)
+    public static string Deserialize(string bufName, TType type, DefField field = null)
     {
-        return type.Apply(LuaUnderlyingDeserializeVisitor.Ins, bufName);
+        var visitor = LuaUnderlyingDeserializeVisitor.Ins;
+        visitor.CurrentField = field;
+        try
+        {
+            return type.Apply(visitor, bufName);
+        }
+        finally
+        {
+            visitor.CurrentField = null;
+        }
     }
 
     public static bool HasConstructorValidator(DefField field)
     {
         return field.CType.Validators.Any(v => v is ConstructorValidator);
+    }
+
+    public static bool HasObjectFactory(DefField field)
+    {
+        return field.HasTag("ObjectFactory");
     }
 }

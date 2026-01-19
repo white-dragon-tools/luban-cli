@@ -58,9 +58,13 @@ local function InitTypes(methods)
             local o = table.clone(bs)
         {{~ for field in bean.hierarchy_export_fields ~}}
             {{~if field.ctype.is_bean~}}
-            o.{{field.name}} = {{deserialize ('bs.' + field.name) field.ctype}}
+            {{~if has_object_factory field~}}
+            o.{{field.name}} = function() return {{deserialize ('bs.' + field.name) field.ctype field}} end
+            {{~else~}}
+            o.{{field.name}} = {{deserialize ('bs.' + field.name) field.ctype field}}
+            {{~end~}}
             {{~else if field.ctype.is_collection && field.ctype.element_type.is_bean~}}
-            o.{{field.name}} = {{deserialize ('bs.' + field.name) field.ctype}}
+            o.{{field.name}} = {{deserialize ('bs.' + field.name) field.ctype field}}
             {{~else if has_constructor_validator field~}}
             o.{{field.name}} = methods.getClass(bs.{{field.name}})
             {{~end~}}

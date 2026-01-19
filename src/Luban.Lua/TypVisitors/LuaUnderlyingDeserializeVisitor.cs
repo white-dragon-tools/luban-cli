@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Luban.Defs;
 using Luban.Types;
 using Luban.TypeVisitors;
 
@@ -27,6 +28,8 @@ public class LuaUnderlyingDeserializeVisitor : DecoratorFuncVisitor<string, stri
 {
     public static LuaUnderlyingDeserializeVisitor Ins { get; } = new();
 
+    public DefField CurrentField { get; set; }
+
     public override string DoAccept(TType type, string x)
     {
         return $"{type.Apply(LuaDeserializeMethodNameVisitor.Ins)}({x})";
@@ -34,17 +37,29 @@ public class LuaUnderlyingDeserializeVisitor : DecoratorFuncVisitor<string, stri
 
     public override string Accept(TArray type, string x)
     {
-        return $"readArray({x}, {type.ElementType.Apply(LuaDeserializeMethodNameVisitor.Ins)})";
+        var deserializer = type.ElementType.Apply(LuaDeserializeMethodNameVisitor.Ins);
+        var hasObjectFactory = CurrentField?.HasTag("ObjectFactory") ?? false;
+        return hasObjectFactory
+            ? $"readArray({x}, {deserializer}, true)"
+            : $"readArray({x}, {deserializer})";
     }
 
     public override string Accept(TList type, string x)
     {
-        return $"readList({x}, {type.ElementType.Apply(LuaDeserializeMethodNameVisitor.Ins)})";
+        var deserializer = type.ElementType.Apply(LuaDeserializeMethodNameVisitor.Ins);
+        var hasObjectFactory = CurrentField?.HasTag("ObjectFactory") ?? false;
+        return hasObjectFactory
+            ? $"readList({x}, {deserializer}, true)"
+            : $"readList({x}, {deserializer})";
     }
 
     public override string Accept(TSet type, string x)
     {
-        return $"readSet({x}, {type.ElementType.Apply(LuaDeserializeMethodNameVisitor.Ins)})";
+        var deserializer = type.ElementType.Apply(LuaDeserializeMethodNameVisitor.Ins);
+        var hasObjectFactory = CurrentField?.HasTag("ObjectFactory") ?? false;
+        return hasObjectFactory
+            ? $"readSet({x}, {deserializer}, true)"
+            : $"readSet({x}, {deserializer})";
     }
 
     public override string Accept(TMap type, string x)

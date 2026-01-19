@@ -50,7 +50,7 @@ local function InitTypes(methods)
         class._deserialize = function(bs)
             if not bs then return nil end
             local o = table.clone(bs)
-            o.effect = beans['EffectData']._deserialize(bs.effect)
+            o.effect = function() return beans['EffectData']._deserialize(bs.effect) end
             setmetatable(o, class)
             return o
         end
