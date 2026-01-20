@@ -1,50 +1,107 @@
-
-- [README 中文](./README.md)
-- [README English](./README_EN.md)
-
-# Luban
+# Luban for Roblox-TS
 
 ![icon](docs/images/logo.png)
 
 [![license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT) ![star](https://img.shields.io/github/stars/focus-creative-games/luban?style=flat-square)
 
+[中文](./README.md) | English
 
-luban is a powerful, easy-to-use, elegant, and stable game configuration solution. It is designed to meet the needs of simple to complex game configuration workflows from small to very large game projects.
+This project is based on [Luban](https://github.com/focus-creative-games/luban) v4.5, specifically designed to provide configuration compilation support for Roblox-TS projects.
 
-luban can handle a variety of file types, supports popular languages, can generate multiple export formats, supports rich data inspection functions, has good cross-platform capabilities, and generates extremely fast.
-Luban has a clear and elegant generation pipeline design, supports good modularization and plug-in, and is convenient for developers to carry out secondary development. Developers can easily adapt luban to their own configuration format, and customize powerful configuration tools that meet project requirements.
+## Core Features
 
-Luban standardizes the game configuration development workflow, which can greatly improve the efficiency of planning and programming.
+### Original Luban Features
 
-## Core features
+- **Rich Source Data Formats** - Supports Excel (csv, xls, xlsx, xlsm), JSON, XML, YAML, Lua
+- **Rich Export Formats** - Supports binary, JSON, BSON, XML, Lua, YAML
+- **Complete Type System** - Supports OOP type inheritance for complex data like behavior trees, skills, quests
+- **Multi-language Code Generation** - C#, Java, Go, C++, Lua, Python, JavaScript, TypeScript, Rust, etc.
+- **Powerful Data Validation** - ref reference check, path resource path, range check, etc.
+- **Cross-platform Support** - Runs well on Win, Linux, Mac platforms
 
-- Rich source data format. Support excel family (csv, xls, xlsx, xlsm), json, xml, yaml, lua, etc.
-- Rich export formats. Support generating binary, json, bson, xml, lua, yaml and other format data
-- Enhanced excel format. Simple configurations such as simple lists, substructures, structured lists, and arbitrarily complex deep nested structures can be concisely configured
-- Complete type system. Not only can it express common specification line lists, but it can flexibly and elegantly express complex GamePlay data such as behavior trees, skills, plots, and dungeons because **supports OOP type inheritance**
-- Support multiple languages. Supports generating language codes such as c#, java, go, cpp, lua, python, javascript, typescript, php, rust, godot, etc.
-- Support popular message schemes. protobuf(schema + binary + json), flatbuffers(schema + json), msgpack(binary)
-- Powerful data verification capability. ref reference check, path resource path, range range check, etc.
-- Perfect localization support
-- Supports all major game engines and platforms. Support Unity, Unreal, Cocos2x, Godot, WeChat games, etc.
-- Good cross-platform capability. It can run well on Win, Linux, and Mac platforms.
-- Support all mainstream hot update solutions. hybridclr, ilruntime, {x,t,s}lua, puerts, etc.
-- The generated code makes no reflection API calls, ensuring compatibility with common code obfuscation and hardening tools such as [Obfuz](https://github.com/focus-creative-games/obfuz), Obfuscator, Confuser, and .NET Refactor.
-- Clear and elegant generation pipeline, it is easy to carry out secondary development on the basis of luban, and customize a configuration tool suitable for your own project style.
+### Roblox-TS Extended Features
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Constructor Validator | ✅ Done | Validates type inheritance relationships |
+| String Enum Types | ✅ Done | Supports string-valued enums |
+| JSON Schema Output | ✅ Done | Provides schema for luban-editor |
+| Object Factory | 🔴 Planned | Creates independent object instances from config |
+| Flamework Reflect ID | 🔴 Planned | Converts config data to class instances |
+| TypeScript Reference Positioning | 🔴 Planned | Generates .d.ts referencing existing types |
+
+## Quick Start
+
+### Build the Project
+
+```bash
+cd src
+dotnet build Luban.sln
+```
+
+### Run Luban
+
+```bash
+cd src/Luban
+dotnet run -- --conf <config_file> -t <target> [options]
+```
+
+### Run Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run with verbose output
+npm run test:verbose
+
+# Run specific test
+npm run test:filter "DisplayName~basic_types"
+```
 
 ## Documentation
 
-- [Official Documentation](https://www.datable.cn/)
-- [Quick Start](https://www.datable.cn/docs/beginner/quickstart)
-- **Example Project** ([github](https://github.com/focus-creative-games/luban_examples)) ([gitee](https://gitee.com/focus-creative-games/luban_examples) )
+### User Documentation
 
-## Support and contact
+- [Official Documentation](https://www.datable.cn/) - Complete Luban usage guide
+- [Quick Start](https://www.datable.cn/docs/beginner/quickstart) - Getting started tutorial
+- [Example Projects](https://github.com/focus-creative-games/luban_examples) - Examples for various languages
 
-- QQ group: 692890842 (Luban development exchange group)
-- discord: https://discord.gg/dGY4zzGMJ4
+### Project Documentation
+
+- [Data Validators](./docs/VALIDATORS.md) - Usage guide for constructor, ref, path, range validators
+- [JSON Schema Output](./docs/JSON_SCHEMA_OUTPUT.md) - JSON Schema generation feature details
+- [Luau Integration](./docs/LUAU_INTEGRATION.md) - Luau static analysis integration guide
+- [Integration Tests](./tests/README.md) - Test framework usage guide
+
+### Development Documentation
+
+- [CLAUDE.md](./CLAUDE.md) - Project architecture and development guide (for AI assistants and developers)
+
+## Project Structure
+
+```
+luban/
+├── src/
+│   ├── Luban/                      # CLI entry point
+│   ├── Luban.Core/                 # Core framework
+│   ├── Luban.Lua/                  # Lua code generator
+│   ├── Luban.JsonSchema/           # JSON Schema generator
+│   ├── Luban.DataLoader.Builtin/   # Data loaders
+│   ├── Luban.DataValidator.Builtin/# Data validators
+│   └── Luban.DataTarget.Builtin/   # Data exporters
+├── tests/
+│   └── Luban.IntegrationTests/     # Integration tests
+├── docs/                           # Detailed documentation
+└── scripts/                        # Build scripts
+```
+
+## Support and Contact
+
+- QQ Group: 692890842 (Luban Development Exchange Group)
+- Discord: https://discord.gg/dGY4zzGMJ4
 - Email: luban@code-philosophy.com
 
+## License
 
-## license
-
-Luban is licensed under the [MIT](https://github.com/focus-creative-games/luban/blob/main/LICENSE) license
+Licensed under [MIT](https://github.com/focus-creative-games/luban/blob/main/LICENSE)

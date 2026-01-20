@@ -1,409 +1,34 @@
 # Luban for Roblox-TS
 
-本项目基于 `luban v4.5 (0203b7a)` 开发，专门为 roblox-ts 项目提供配置编译支持。
+![icon](docs/images/logo.png)
 
-> **前置阅读**: 请先阅读 `README.luban.4.5.md` 文档，了解原始 Luban 项目的基础功能。
+[![license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT) ![star](https://img.shields.io/github/stars/focus-creative-games/luban?style=flat-square)
 
-## 项目定位
+[English](./README_EN.md) | 中文
 
-- **目标平台**: Roblox-TS 项目
-- **输出格式**: JSON 数据文件 + Luau 代码 + TypeScript 定义文件
-- **集成方式**: 通过 `rojo` 同步到 Roblox 项目
+本项目基于 [Luban](https://github.com/focus-creative-games/luban) v4.5 开发，专门为 Roblox-TS 项目提供配置编译支持。
 
-## 与原版 Luban 的区别
+## 核心特性
 
-- ✅ 专注于 Roblox Luau 代码生成
-- ✅ 提供 TypeScript 定义文件 (`.d.ts`)
-- ✅ 支持 Flamework Reflect ID 集成
-- ✅ 扩展字符串枚举类型
-- ✅ 支持工厂函数模式
-- ✅ 新增 `constructor` 验证器，验证类型继承关系
+### 原版 Luban 特性
 
----
+- **丰富的源数据格式** - 支持 Excel (csv, xls, xlsx, xlsm)、JSON、XML、YAML、Lua
+- **丰富的导出格式** - 支持 binary、JSON、BSON、XML、Lua、YAML
+- **完备的类型系统** - 支持 OOP 类型继承，可表达行为树、技能、剧情等复杂数据
+- **多语言代码生成** - C#、Java、Go、C++、Lua、Python、JavaScript、TypeScript、Rust 等
+- **强大的数据校验** - ref 引用检查、path 资源路径、range 范围检查等
+- **跨平台支持** - Win、Linux、Mac 平台良好运行
 
-## 特性详解
-
-### 1. Constructor 验证器
-
-#### 使用场景
-当字段值是一个类型名称字符串，需要确保该类型存在并且是指定基类的子类时使用。例如：
-- 技能触发器类型（`DamageTrigger`、`HealTrigger` 等）
-- 效果类型（`BuffEffect`、`DamageEffect` 等）
-- 任何需要多态配置的场景
-
-#### 配置方式
-在 bean 字段的类型定义中使用 `#(constructor=BaseTypeName)` 语法。
-
-#### Schema 示例
-```xml
-<bean name="BaseTrigger">
-    <var name="id" type="int"/>
-    <var name="name" type="string"/>
-</bean>
-
-<bean name="DamageTrigger" parent="BaseTrigger">
-    <var name="damage" type="int"/>
-</bean>
-
-<bean name="HealTrigger" parent="BaseTrigger">
-    <var name="healAmount" type="int"/>
-</bean>
-
-<bean name="SkillConfig">
-    <var name="skillId" type="int"/>
-    <!-- triggerType 必须是 BaseTrigger 或其子类的名称 -->
-    <var name="triggerType" type="string#(constructor=BaseTrigger)"/>
-</bean>
-```
-
-#### 数据示例
-```json
-[
-  {
-    "skillId": 1,
-    "triggerType": "DamageTrigger"  // ✅ 有效
-  },
-  {
-    "skillId": 2,
-    "triggerType": "HealTrigger"     // ✅ 有效
-  },
-  {
-    "skillId": 3,
-    "triggerType": "InvalidTrigger"  // ❌ 验证失败
-  }
-]
-```
-
-#### 验证规则
-- 字段值不能为空
-- 字段值必须是已定义的 Bean 类型名称
-- 该 Bean 类型必须是指定基类的子类或基类本身
-- 类型名称区分大小写（精确匹配）
-- 必须使用类型名，不支持别名
-
-#### Lua 代码生成
-对于使用 `constructor` 验证器的字段，生成的 Lua 代码会自动使用 `methods.getClass()` 将类型名称字符串转换为类引用：
-
-```lua
-class._deserialize = function(bs)
-    local o = table.clone(bs)
-    -- 自动将 triggerType 字符串转换为类引用
-    o.triggerType = methods.getClass(bs.triggerType)
-    setmetatable(o, class)
-    return o
-end
-```
-
-#### 详细文档
-更多使用说明请参阅：[数据验证器文档](./docs/VALIDATORS.md)
-
----
-
-### 2. 工厂函数 (ObjectFactory)
-
-#### 使用场景
-当需要从同一份配置数据创建多个独立的对象实例时使用。例如：
-- 技能效果实例（每次释放技能创建新的效果对象）
-- Buff 实例（同一个 Buff 配置可以应用到多个角色）
-- 粒子效果实例（同一个配置创建多个粒子）
-
-#### 配置方式
-在 bean 的字段上添加标签 `tags="ObjectFactory=true"`
-
-#### Schema 示例
-```xml
-<bean name="SkillConfig">
-    <var name="id" type="int"/>
-    <var name="name" type="string"/>
-    <!-- 这个字段会被包装成工厂函数 -->
-    <var name="effect" type="EffectData" tags="ObjectFactory=true"/>
-</bean>
-
-<bean name="EffectData">
-    <var name="damage" type="int"/>
-    <var name="duration" type="float"/>
-</bean>
-```
-
-#### 生成代码示例
-```lua
--- 生成的 Lua 代码
-local config = {
-    id = 1001,
-    name = "火球术",
-    effect = function()
-        return {
-            damage = 100,
-            duration = 3.0
-        }
-    end
-}
-
--- 使用方式：每次调用都创建新实例
-local effect1 = config.effect()
-local effect2 = config.effect()
--- effect1 和 effect2 是两个独立的对象
-```
-
-#### 注意事项
-- 工厂函数是无参数的 `() => object` 形式
-- 每次调用返回新的对象副本，互不影响
-- 只对字段级别生效，不影响整个 bean
-
-### 3. Flamework Reflect ID
-
-#### 使用场景
-当配置数据需要转换为特定的类实例时使用。例如：
-- Buff 配置需要实例化为 Buff 类对象
-- 技能配置需要实例化为 Skill 类对象
-- AI 行为配置需要实例化为 Behavior 类对象
-
-通过 Flamework 的反射机制，可以自动将配置数据转换为对应的类实例，无需手动编写转换代码。
-
-#### 配置方式
-在 bean 上添加标签 `tags="flameworkId={id}"`
-
-#### ID 格式说明
-ID 格式为：`文件路径@类名`
-
-示例：
-- `shared/plugins/buff-system/buff-core-plugin/components/buff-hooks@BuffHooks`
-  - 文件路径：`shared/plugins/buff-system/buff-core-plugin/components/buff-hooks`
-  - 类名：`BuffHooks`
-
-#### Schema 示例
-```xml
-<bean name="BuffConfig" tags="flameworkId=shared/plugins/buff-system/buff-core@Buff">
-    <var name="id" type="int"/>
-    <var name="duration" type="float"/>
-    <var name="stackable" type="bool"/>
-</bean>
-```
-
-#### 生成代码示例
-```lua
--- 生成的 Lua 代码会调用 runtime 库
-local runtime = require("luban-runtime")
-
-local config = runtime.createInstance(
-    {
-        id = 1001,
-        duration = 5.0,
-        stackable = true
-    },
-    "shared/plugins/buff-system/buff-core@Buff"
-)
-
--- config 现在是 Buff 类的实例，而不是普通 table
-```
-
-#### Runtime 库要求
-需要提供一个 runtime 库，实现以下功能：
-- 根据 reflect id 查找对应的类型
-- 调用构造函数：`new(configData, reflectId)`
-  - 参数1：配置数据（table）
-  - 参数2：reflect id（string）
-- 返回类实例
-
-#### 注意事项
-- 可以与工厂函数组合使用
-- 组合使用时，先通过 flamework 实例化，再包装成工厂函数
-- 不需要类满足特定的接口或基类要求
-
-
-### 4. TypeScript 引用定位
-
-#### 使用场景
-当生成的 TypeScript 定义文件需要引用项目中已有的类型时使用。例如：
-- 配置表引用已定义的业务类型
-- 避免重复定义类型
-- 保持类型定义的一致性
-
-#### 配置方式
-在 table 上添加标签 `tags="type={路径}({类型名})"`
-
-#### 路径格式
-支持两种路径格式：
-
-1. **相对路径**：`shared/plugins/foo(FooType)`
-2. **node_modules**：`@rbxts/foo(FooType)`
-
-#### Schema 示例
-```xml
-<!-- 引用项目中的类型 -->
-<table name="TbBuff" value="BuffConfig" input="buffs.json"
-       tags="type=shared/plugins/buff-system/buff-core(Buff)"/>
-
-<!-- 引用 node_modules 中的类型 -->
-<table name="TbItem" value="ItemConfig" input="items.json"
-       tags="type=@rbxts/game-core(Item)"/>
-```
-
-#### 生成代码示例
-```typescript
-// 生成的 .d.ts 文件
-import { Buff } from "shared/plugins/buff-system/buff-core";
-import { Item } from "@rbxts/game-core";
-
-// 根据 Luban 表类型生成对应的容器类型
-export interface TbBuff {
-    // Map 表
-    get(key: string): Buff | undefined;
-    getAll(): Map<string, Buff>;
-}
-
-export interface TbItem {
-    // List 表
-    getAll(): Array<Item>;
-}
-
-// 单例表直接使用类型
-export const TbConfig: GameConfig;
-```
-
-#### 注意事项
-- 只需要为 table 配置，不需要为每个 bean 配置
-- 生成的容器类型取决于 Luban 的表类型（map/list/singleton）
-- 多个 table 引用同一模块的不同类型时，import 语句会自动合并 
-
-### 5. 字符串枚举类型
-
-#### 使用场景
-当枚举值需要使用字符串而不是数字时使用。例如：
-- 物品类型：`"weapon"`, `"armor"`, `"consumable"`
-- 状态标识：`"idle"`, `"running"`, `"jumping"`
-- 配置键：`"easy"`, `"normal"`, `"hard"`
-
-字符串枚举在配置文件中更具可读性，也更容易与外部系统集成。
-
-#### 配置方式
-直接设置 enum 的value.
-
-#### Schema 示例
-```xml
-<!-- 字符串枚举 -->
-<enum name="ItemType">
-    <var name="Weapon" value="weapon"/>
-    <var name="Armor" value="armor"/>
-    <var name="Consumable" value="consumable"/>
-    <var name="Material" value="material"/>
-</enum>
-
-<!-- 数字枚举（原版 Luban 默认） -->
-<enum name="ItemRarity">
-    <var name="Common" value="1"/>
-    <var name="Rare" value="2"/>
-    <var name="Epic" value="3"/>
-</enum>
-```
-
-#### 生成代码示例
-```lua
--- 生成的 Lua 代码
-local ItemType = {
-    Weapon = "weapon",
-    Armor = "armor",
-    Consumable = "consumable",
-    Material = "material"
-}
-
--- 使用方式
-local item = {
-    type = ItemType.Weapon,  -- "weapon"
-    name = "长剑"
-}
-```
-
-#### 注意事项
-- 必须为每个枚举项显式指定 `value` 属性，否则 Luban 会报错
-- 字符串枚举不会生成 TypeScript 定义文件（只生成 table type）
-- 在 TypeScript 侧可以使用字符串字面量类型来保证类型安全
-
----
-
-## 特性组合使用
-
-### ObjectFactory + Flamework Reflect ID
-
-这两个特性可以组合使用，实现"每次调用工厂函数都创建新的类实例"的效果。
-
-#### Schema 示例
-```xml
-<bean name="SkillConfig">
-    <var name="id" type="int"/>
-    <var name="name" type="string"/>
-    <!-- 组合使用：工厂函数 + Flamework 实例化 -->
-    <var name="effect" type="EffectData"
-         tags="ObjectFactory=true;flameworkId=shared/effects/effect-core@Effect"/>
-</bean>
-
-<bean name="EffectData" tags="flameworkId=shared/effects/effect-core@Effect">
-    <var name="damage" type="int"/>
-    <var name="duration" type="float"/>
-</bean>
-```
-
-#### 执行顺序
-1. 先通过 Flamework 将配置数据实例化为 Effect 类对象
-2. 再将实例化逻辑包装成工厂函数
-3. 每次调用工厂函数都会创建新的 Effect 实例
-
-#### 生成代码示例
-```lua
-local runtime = require("luban-runtime")
-
-local config = {
-    id = 1001,
-    name = "火球术",
-    effect = function()
-        return runtime.createInstance(
-            {
-                damage = 100,
-                duration = 3.0
-            },
-            "shared/effects/effect-core@Effect"
-        )
-    end
-}
-
--- 使用方式
-local effect1 = config.effect()  -- 创建第一个 Effect 实例
-local effect2 = config.effect()  -- 创建第二个 Effect 实例
--- effect1 和 effect2 是两个独立的 Effect 类实例
-```
-
-### TypeScript 引用定位 + 其他特性
-
-TypeScript 引用定位是在 table 级别配置的，可以与 bean 级别的特性（ObjectFactory、Flamework）自由组合。
-
-#### Schema 示例
-```xml
-<!-- Table 引用 TypeScript 类型 -->
-<table name="TbSkill" value="SkillConfig" input="skills.json"
-       tags="type=shared/game-logic/skill-system(Skill)"/>
-
-<!-- Bean 使用 ObjectFactory 和 Flamework -->
-<bean name="SkillConfig">
-    <var name="id" type="int"/>
-    <var name="effect" type="EffectData"
-         tags="ObjectFactory=true;flameworkId=shared/effects/effect-core@Effect"/>
-</bean>
-```
-
-这样生成的 TypeScript 定义会引用 Skill 类型，而 Lua 代码会包含工厂函数和 Flamework 实例化逻辑。
-
----
-
-## 开发状态
+### Roblox-TS 扩展特性
 
 | 特性 | 状态 | 说明 |
 |------|------|------|
-| 工厂函数 (ObjectFactory) | 🔴 未开始 | 计划中 |
-| Flamework Reflect ID | 🔴 未开始 | 计划中 |
-| TypeScript 引用定位 | 🔴 未开始 | 计划中 |
-| 字符串枚举类型 | 🔴 未开始 | 计划中 |
-
----
+| Constructor 验证器 | ✅ 已完成 | 验证类型继承关系 |
+| 字符串枚举类型 | ✅ 已完成 | 支持字符串值的枚举 |
+| JSON Schema 输出 | ✅ 已完成 | 为 luban-editor 提供 schema |
+| 工厂函数 (ObjectFactory) | 🔴 计划中 | 从配置创建独立对象实例 |
+| Flamework Reflect ID | 🔴 计划中 | 配置数据转换为类实例 |
+| TypeScript 引用定位 | 🔴 计划中 | 生成 .d.ts 引用已有类型 |
 
 ## 快速开始
 
@@ -432,20 +57,26 @@ npm run test:verbose
 
 # 运行特定测试
 npm run test:filter "DisplayName~basic_types"
-
-# 测试 constructor 验证器
-npm run test:constructor
 ```
 
-### 代码格式化
+## 文档
 
-```bash
-cd scripts
-./format.sh    # Linux/Mac
-format.bat     # Windows
-```
+### 用户文档
 
----
+- [官方文档](https://www.datable.cn/) - Luban 完整使用指南
+- [快速上手](https://www.datable.cn/docs/beginner/quickstart) - 入门教程
+- [示例项目](https://github.com/focus-creative-games/luban_examples) - 各语言示例
+
+### 项目文档
+
+- [数据验证器](./docs/VALIDATORS.md) - constructor、ref、path、range 验证器使用说明
+- [JSON Schema 输出](./docs/JSON_SCHEMA_OUTPUT.md) - JSON Schema 生成功能详解
+- [Luau 集成](./docs/LUAU_INTEGRATION.md) - Luau 静态分析集成说明
+- [集成测试](./tests/README.md) - 测试框架使用说明
+
+### 开发文档
+
+- [CLAUDE.md](./CLAUDE.md) - 项目架构和开发指南（供 AI 助手和开发者参考）
 
 ## 项目结构
 
@@ -455,45 +86,22 @@ luban/
 │   ├── Luban/                      # CLI 入口
 │   ├── Luban.Core/                 # 核心框架
 │   ├── Luban.Lua/                  # Lua 代码生成器
+│   ├── Luban.JsonSchema/           # JSON Schema 生成器
 │   ├── Luban.DataLoader.Builtin/   # 数据加载器
 │   ├── Luban.DataValidator.Builtin/# 数据验证器
 │   └── Luban.DataTarget.Builtin/   # 数据导出器
 ├── tests/
 │   └── Luban.IntegrationTests/     # 集成测试
-├── scripts/                        # 构建脚本
-├── CLAUDE.md                       # 项目架构文档
-├── README.luban.4.5.md            # 原版 Luban 文档
-└── readme.md                       # 本文档
+├── docs/                           # 详细文档
+└── scripts/                        # 构建脚本
 ```
 
----
+## 支持与联系
 
-## 相关资源
+- QQ群: 692890842 (Luban开发交流群)
+- Discord: https://discord.gg/dGY4zzGMJ4
+- 邮箱: luban@code-philosophy.com
 
-- **原版 Luban 文档**: [README.luban.4.5.md](./README.luban.4.5.md)
-- **项目架构文档**: [CLAUDE.md](./CLAUDE.md)
-- **官方文档**: https://www.datable.cn/
-- **示例项目**: https://github.com/focus-creative-games/luban_examples
+## License
 
----
-
-## 贡献指南
-
-### 添加新特性
-
-1. 在对应的代码生成器项目中实现功能（如 `Luban.Lua/`）
-2. 在 `tests/Luban.IntegrationTests/TestData/` 添加测试用例
-3. 运行测试确保功能正常
-4. 更新本文档
-
-### 代码规范
-
-- 使用 .NET 8.0
-- 提交前运行 `dotnet format`
-- 遵循现有代码风格
-
----
-
-## 许可证
-
-基于原版 Luban 项目开发，遵循相同的许可证。
+基于 [MIT](https://github.com/focus-creative-games/luban/blob/main/LICENSE) 许可证
