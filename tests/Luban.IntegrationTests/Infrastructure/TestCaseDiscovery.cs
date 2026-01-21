@@ -98,9 +98,9 @@ public class TestCaseDiscovery
         }
 
         // Check that at least one expected output type exists
-        if (!testCase.HasExpectedLua && !testCase.HasExpectedJson)
+        if (!testCase.HasExpectedLua && !testCase.HasExpectedJson && !testCase.HasExpectedJsonSchema)
         {
-            errorMessage = "No expected output found (expected/lua/ or expected/json/)";
+            errorMessage = "No expected output found (expected/lua/, expected/json/, or expected/json-schema/)";
             return false;
         }
 

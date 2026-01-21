@@ -1,0 +1,40 @@
+[
+  {
+    "id": 1,
+    "name": "Fireball",
+    "effect": {
+      "$type": "DamageEffect",
+      "id": 101,
+      "description": "Fire damage",
+      "damage": 50,
+      "damageType": "fire"
+    },
+    "effects": [
+      {
+        "$type": "DamageEffect",
+        "id": 102,
+        "description": "Initial damage",
+        "damage": 30,
+        "damageType": "fire"
+      },
+      {
+        "$type": "BuffEffect",
+        "id": 103,
+        "description": "Burn debuff",
+        "buffType": "burn",
+        "duration": 5
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Heal",
+    "effect": {
+      "$type": "HealEffect",
+      "id": 201,
+      "description": "Restore health",
+      "healAmount": 100
+    },
+    "effects": []
+  }
+]

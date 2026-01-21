@@ -45,5 +45,10 @@ public class TestCase
     /// </summary>
     public bool HasExpectedJson => Directory.Exists(Path.Combine(ExpectedDirectory, "json"));
 
+    /// <summary>
+    /// Whether this test case has expected JSON Schema output
+    /// </summary>
+    public bool HasExpectedJsonSchema => Directory.Exists(Path.Combine(ExpectedDirectory, "json-schema"));
+
     public override string ToString() => Name;
 }

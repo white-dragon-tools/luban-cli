@@ -1,0 +1,273 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "luban-schema",
+  "definitions": {
+    "Skill": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "effect": {
+          "$ref": "#/definitions/SkillEffect"
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SkillEffect"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "effect",
+        "effects"
+      ],
+      "additionalProperties": false
+    },
+    "SkillEffect": {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "type": "string",
+          "enum": [
+            "DamageEffect",
+            "HealEffect",
+            "BuffEffect"
+          ],
+          "description": "Type discriminator for SkillEffect polymorphic type"
+        }
+      },
+      "required": [
+        "$type"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "$type": {
+                "const": "DamageEffect"
+              }
+            },
+            "required": [
+              "$type"
+            ]
+          },
+          "then": {
+            "$ref": "#/definitions/DamageEffect"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "$type": {
+                "const": "HealEffect"
+              }
+            },
+            "required": [
+              "$type"
+            ]
+          },
+          "then": {
+            "$ref": "#/definitions/HealEffect"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "$type": {
+                "const": "BuffEffect"
+              }
+            },
+            "required": [
+              "$type"
+            ]
+          },
+          "then": {
+            "$ref": "#/definitions/BuffEffect"
+          }
+        }
+      ],
+      "discriminator": {
+        "propertyName": "$type"
+      }
+    },
+    "DamageEffectDataFile": {
+      "type": "object",
+      "description": "Standalone file variant of DamageEffect. Use this schema for files that contain only DamageEffect data.",
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "description": "JSON Schema reference for editor intellisense"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "damage": {
+          "type": "integer"
+        },
+        "damageType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "description",
+        "damage",
+        "damageType"
+      ],
+      "additionalProperties": false
+    },
+    "HealEffectDataFile": {
+      "type": "object",
+      "description": "Standalone file variant of HealEffect. Use this schema for files that contain only HealEffect data.",
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "description": "JSON Schema reference for editor intellisense"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "healAmount": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "description",
+        "healAmount"
+      ],
+      "additionalProperties": false
+    },
+    "BuffEffectDataFile": {
+      "type": "object",
+      "description": "Standalone file variant of BuffEffect. Use this schema for files that contain only BuffEffect data.",
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "description": "JSON Schema reference for editor intellisense"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "buffType": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "description",
+        "buffType",
+        "duration"
+      ],
+      "additionalProperties": false
+    },
+    "BuffEffect": {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "BuffEffect"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "buffType": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "$type",
+        "id",
+        "description",
+        "buffType",
+        "duration"
+      ],
+      "additionalProperties": false
+    },
+    "DamageEffect": {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "DamageEffect"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "damage": {
+          "type": "integer"
+        },
+        "damageType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "id",
+        "description",
+        "damage",
+        "damageType"
+      ],
+      "additionalProperties": false
+    },
+    "HealEffect": {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "HealEffect"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "healAmount": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "$type",
+        "id",
+        "description",
+        "healAmount"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "tables": {
+    "TbSkill": {
+      "valueType": "Skill",
+      "mode": "map",
+      "index": "id",
+      "inputFiles": [
+        "*@skills.json"
+      ]
+    }
+  }
+}

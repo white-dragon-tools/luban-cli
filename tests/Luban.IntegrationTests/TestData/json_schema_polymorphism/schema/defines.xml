@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- Abstract base class for skill effects -->
+  <bean name="SkillEffect">
+    <var name="id" type="int"/>
+    <var name="description" type="string"/>
+  </bean>
+
+  <!-- Concrete subclasses -->
+  <bean name="DamageEffect" parent="SkillEffect">
+    <var name="damage" type="int"/>
+    <var name="damageType" type="string"/>
+  </bean>
+
+  <bean name="HealEffect" parent="SkillEffect">
+    <var name="healAmount" type="int"/>
+  </bean>
+
+  <bean name="BuffEffect" parent="SkillEffect">
+    <var name="buffType" type="string"/>
+    <var name="duration" type="int"/>
+  </bean>
+
+  <!-- Bean using polymorphic field -->
+  <bean name="Skill">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="effect" type="SkillEffect"/>
+    <var name="effects" type="list,SkillEffect"/>
+  </bean>
+
+  <table name="TbSkill" value="Skill" input="*@skills.json"/>
+</root>

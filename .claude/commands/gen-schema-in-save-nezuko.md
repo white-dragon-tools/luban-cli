@@ -1,0 +1,1 @@
+每次修改代码后, 都执行 `D:/projects/save-nezuko/dev-bevy/package.json` 的 `npm run config:schema` 指令, 注意使用本项目的包

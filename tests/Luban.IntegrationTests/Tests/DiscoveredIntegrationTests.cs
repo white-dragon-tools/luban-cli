@@ -51,6 +51,11 @@ public class DiscoveredIntegrationTests : IntegrationTestBase
             dataTargets.Add("json");
         }
 
+        if (testCase.HasExpectedJsonSchema)
+        {
+            codeTargets.Add("json-schema");
+        }
+
         // Run Luban generation
         var result = await RunLubanAsync("test", codeTargets, dataTargets);
 
@@ -81,6 +86,14 @@ public class DiscoveredIntegrationTests : IntegrationTestBase
             var expectedJsonDir = Path.Combine(testCase.ExpectedDirectory, "json");
             var actualJsonDir = Path.Combine(LubanHelper.OutputDirectory, "data");
             AssertFilesMatch(expectedJsonDir, actualJsonDir, "*.json");
+        }
+
+        // Verify JSON Schema output if expected
+        if (testCase.HasExpectedJsonSchema)
+        {
+            var expectedSchemaDir = Path.Combine(testCase.ExpectedDirectory, "json-schema");
+            var actualSchemaDir = Path.Combine(LubanHelper.OutputDirectory, "code");
+            AssertFilesMatch(expectedSchemaDir, actualSchemaDir, "*.json");
         }
     }
 }
