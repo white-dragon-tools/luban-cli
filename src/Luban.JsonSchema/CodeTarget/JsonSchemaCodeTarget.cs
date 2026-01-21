@@ -41,6 +41,30 @@ public class JsonSchemaCodeTarget : CodeTargetBase
         var schema = GenerateSchema(ctx);
         var outputFileName = EnvManager.Current.GetOptionOrDefault(Name, "outputFile", true, "schema.json");
         manifest.AddFile(CreateOutputFile(outputFileName, schema));
+
+        // Generate wrapper schema files for each table
+        var generateWrappers = EnvManager.Current.GetOptionOrDefault(Name, "generateWrappers", true, "true");
+        if (generateWrappers.ToLower() == "true")
+        {
+            var wrapperInfos = new List<(string schemaFile, List<string> inputFiles)>();
+
+            foreach (var table in ctx.ExportTables)
+            {
+                var wrapperSchema = GenerateWrapperSchema(table, outputFileName);
+                var wrapperFileName = $"{ToKebabCase(table.ValueTType.DefBean.Name)}.schema.json";
+                manifest.AddFile(CreateOutputFile($"definitions/{wrapperFileName}", wrapperSchema));
+
+                wrapperInfos.Add((wrapperFileName, table.InputFiles));
+            }
+
+            // Generate VSCode settings
+            var generateVscodeSettings = EnvManager.Current.GetOptionOrDefault(Name, "generateVscodeSettings", true, "true");
+            if (generateVscodeSettings.ToLower() == "true")
+            {
+                var vscodeSettings = GenerateVscodeSettings(wrapperInfos);
+                manifest.AddFile(CreateOutputFile("vscode-json-schemas.json", vscodeSettings));
+            }
+        }
     }
 
     private string GenerateSchema(GenerationContext ctx)
@@ -64,6 +88,22 @@ public class JsonSchemaCodeTarget : CodeTargetBase
         foreach (var bean in ctx.ExportBeans)
         {
             definitions[bean.FullName] = GenerateBeanSchema(bean);
+
+            // Generate XxxDataFile variant for standalone file usage (no $type, has $schema)
+            if (bean.IsAbstractType)
+            {
+                foreach (var child in bean.HierarchyNotAbstractChildren)
+                {
+                    var fileVariantName = $"{child.FullName}DataFile";
+                    definitions[fileVariantName] = GenerateFileVariantSchema(child);
+                }
+            }
+            else if (bean.ParentDefType != null)
+            {
+                // Concrete type with parent - generate file variant
+                var fileVariantName = $"{bean.FullName}DataFile";
+                definitions[fileVariantName] = GenerateFileVariantSchema(bean);
+            }
         }
 
         root["definitions"] = definitions;
@@ -233,18 +273,57 @@ public class JsonSchemaCodeTarget : CodeTargetBase
 
     private JsonObject GeneratePolymorphicBeanSchema(DefBean bean)
     {
-        var schema = new JsonObject();
+        var schema = new JsonObject
+        {
+            ["type"] = "object"
+        };
 
-        var oneOf = new JsonArray();
+        // Collect all concrete child type names for $type enum
+        var typeNames = new JsonArray();
         foreach (var child in bean.HierarchyNotAbstractChildren)
         {
-            oneOf.Add(new JsonObject
-            {
-                ["$ref"] = $"#/definitions/{child.FullName}"
-            });
+            typeNames.Add(child.Name);
         }
-        schema["oneOf"] = oneOf;
 
+        // Build properties with $type having explicit enum
+        var properties = new JsonObject
+        {
+            ["$type"] = new JsonObject
+            {
+                ["type"] = "string",
+                ["enum"] = typeNames,
+                ["description"] = $"Type discriminator for {bean.Name} polymorphic type"
+            }
+        };
+        schema["properties"] = properties;
+
+        // $type is always required
+        schema["required"] = new JsonArray { "$type" };
+
+        // Build allOf with if/then for each concrete type
+        var allOf = new JsonArray();
+        foreach (var child in bean.HierarchyNotAbstractChildren)
+        {
+            var ifThen = new JsonObject
+            {
+                ["if"] = new JsonObject
+                {
+                    ["properties"] = new JsonObject
+                    {
+                        ["$type"] = new JsonObject { ["const"] = child.Name }
+                    },
+                    ["required"] = new JsonArray { "$type" }
+                },
+                ["then"] = new JsonObject
+                {
+                    ["$ref"] = $"#/definitions/{child.FullName}"
+                }
+            };
+            allOf.Add(ifThen);
+        }
+        schema["allOf"] = allOf;
+
+        // Keep discriminator for tools that support it
         schema["discriminator"] = new JsonObject
         {
             ["propertyName"] = "$type"
@@ -345,13 +424,27 @@ public class JsonSchemaCodeTarget : CodeTargetBase
         // Apply based on type
         if (type is Types.TString)
         {
-            if (min.HasValue) schema["minLength"] = min.Value;
-            if (max.HasValue) schema["maxLength"] = max.Value;
+            if (min.HasValue)
+            {
+                schema["minLength"] = min.Value;
+            }
+
+            if (max.HasValue)
+            {
+                schema["maxLength"] = max.Value;
+            }
         }
         else if (type is Types.TArray or Types.TList or Types.TSet)
         {
-            if (min.HasValue) schema["minItems"] = min.Value;
-            if (max.HasValue) schema["maxItems"] = max.Value;
+            if (min.HasValue)
+            {
+                schema["minItems"] = min.Value;
+            }
+
+            if (max.HasValue)
+            {
+                schema["maxItems"] = max.Value;
+            }
         }
     }
 
@@ -424,4 +517,202 @@ public class JsonSchemaCodeTarget : CodeTargetBase
     public override void GenerateTable(GenerationContext ctx, DefTable table, CodeWriter writer) { }
     public override void GenerateBean(GenerationContext ctx, DefBean bean, CodeWriter writer) { }
     public override void GenerateEnum(GenerationContext ctx, DefEnum @enum, CodeWriter writer) { }
+
+    /// <summary>
+    /// Generate a file variant schema for standalone file usage.
+    /// This variant does NOT require $type (since the type is known from the file schema).
+    /// Supports $schema property for VSCode intellisense.
+    /// </summary>
+    private JsonObject GenerateFileVariantSchema(DefBean bean)
+    {
+        var schema = new JsonObject
+        {
+            ["type"] = "object",
+            ["description"] = $"Standalone file variant of {bean.Name}. Use this schema for files that contain only {bean.Name} data."
+        };
+
+        var properties = new JsonObject();
+        var required = new JsonArray();
+
+        // Add $schema property support for VSCode intellisense
+        properties["$schema"] = new JsonObject
+        {
+            ["type"] = "string",
+            ["description"] = "JSON Schema reference for editor intellisense"
+        };
+
+        // DO NOT add $type - this is for standalone files where type is known
+
+        // Add all hierarchy fields
+        foreach (var field in bean.HierarchyFields)
+        {
+            var fieldSchema = field.CType.Apply(JsonSchemaTypeVisitor.Ins);
+
+            if (field.CType.IsNullable)
+            {
+                fieldSchema = WrapNullable(fieldSchema);
+            }
+
+            if (!string.IsNullOrEmpty(field.Comment))
+            {
+                fieldSchema["description"] = field.Comment;
+            }
+
+            ApplyValidators(fieldSchema, field);
+            properties[field.Name] = fieldSchema;
+
+            if (!field.CType.IsNullable)
+            {
+                required.Add(field.Name);
+            }
+        }
+
+        schema["properties"] = properties;
+
+        if (required.Count > 0)
+        {
+            schema["required"] = required;
+        }
+
+        schema["additionalProperties"] = false;
+
+        return schema;
+    }
+
+    /// <summary>
+    /// Generate a wrapper schema file for a table.
+    /// This allows VSCode to provide intellisense for individual data files.
+    /// References XxxDataFile variant which supports $schema and doesn't require $type.
+    /// </summary>
+    private string GenerateWrapperSchema(DefTable table, string mainSchemaFileName)
+    {
+        var valueType = table.ValueTType.DefBean;
+
+        // Use XxxDataFile variant which supports $schema property
+        var dataFileVariant = $"{valueType.FullName}DataFile";
+
+        var schema = new JsonObject
+        {
+            ["$schema"] = "http://json-schema.org/draft-07/schema#",
+            ["$ref"] = $"../{mainSchemaFileName}#/definitions/{dataFileVariant}"
+        };
+
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            TypeInfoResolver = new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver()
+        };
+        return schema.ToJsonString(options);
+    }
+
+    /// <summary>
+    /// Convert PascalCase to kebab-case
+    /// </summary>
+    private static string ToKebabCase(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return name;
+        }
+
+        var result = new System.Text.StringBuilder();
+        for (int i = 0; i < name.Length; i++)
+        {
+            var c = name[i];
+            if (char.IsUpper(c))
+            {
+                if (i > 0)
+                {
+                    result.Append('-');
+                }
+                result.Append(char.ToLower(c));
+            }
+            else
+            {
+                result.Append(c);
+            }
+        }
+        return result.ToString();
+    }
+
+    /// <summary>
+    /// Generate VSCode json.schemas configuration.
+    /// This file can be merged into .vscode/settings.json
+    /// </summary>
+    private string GenerateVscodeSettings(List<(string schemaFile, List<string> inputFiles)> wrapperInfos)
+    {
+        var schemaDir = EnvManager.Current.GetOptionOrDefault(Name, "schemaDir", true, "./configs/schema");
+        var dataDir = EnvManager.Current.GetOptionOrDefault(Name, "dataDir", true, "");
+
+        var schemas = new JsonArray();
+
+        foreach (var (schemaFile, inputFiles) in wrapperInfos)
+        {
+            var fileMatches = new JsonArray();
+
+            foreach (var inputFile in inputFiles)
+            {
+                // Convert input file pattern to fileMatch pattern
+                var pattern = inputFile;
+
+                // Remove leading *@ prefix (Luban convention for JSON files)
+                if (pattern.StartsWith("*@"))
+                {
+                    pattern = pattern.Substring(2);
+                }
+
+                // Normalize path separators
+                pattern = pattern.Replace('\\', '/');
+
+                // Remove leading ../ or ./
+                while (pattern.StartsWith("../"))
+                {
+                    pattern = pattern.Substring(3);
+                }
+                while (pattern.StartsWith("./"))
+                {
+                    pattern = pattern.Substring(2);
+                }
+
+                // If pattern is a directory (no extension or ends with /), add **/*.json
+                if (!pattern.Contains('.') || pattern.EndsWith("/"))
+                {
+                    pattern = pattern.TrimEnd('/') + "/**/*.json";
+                }
+
+                // Add dataDir prefix if configured
+                // Format: configs/datas/xxx/**/*.json
+                if (!string.IsNullOrEmpty(dataDir))
+                {
+                    pattern = dataDir.TrimEnd('/') + "/" + pattern;
+                }
+
+                fileMatches.Add(pattern);
+            }
+
+            if (fileMatches.Count > 0)
+            {
+                var schemaEntry = new JsonObject
+                {
+                    ["fileMatch"] = fileMatches,
+                    ["url"] = $"{schemaDir}/definitions/{schemaFile}"
+                };
+                schemas.Add(schemaEntry);
+            }
+        }
+
+        var root = new JsonObject
+        {
+            ["json.schemas"] = schemas
+        };
+
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            TypeInfoResolver = new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver()
+        };
+        return root.ToJsonString(options);
+    }
 }

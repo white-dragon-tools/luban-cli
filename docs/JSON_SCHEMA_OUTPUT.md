@@ -211,7 +211,19 @@ Luban.JsonSchema
 
 ### 3.1 文件结构
 
-输出单个 `schema.json` 文件，包含所有类型定义：
+输出目录结构如下：
+
+```
+output/
+├── schema.json              # 主 schema 文件，包含所有类型定义
+├── vscode-json-schemas.json # VSCode json.schemas 配置
+└── definitions/             # 每个表的 wrapper schema
+    ├── item.schema.json
+    ├── skill.schema.json
+    └── ...
+```
+
+**主 schema 文件 (schema.json)**：
 
 ```json
 {
@@ -230,6 +242,17 @@ Luban.JsonSchema
       "inputFiles": ["item.json"]
     }
   }
+}
+```
+
+**Wrapper schema 文件 (definitions/*.schema.json)**：
+
+每个表会生成一个 wrapper schema 文件，用于 VSCode 智能提示：
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "../schema.json#/definitions/ItemDataFile"
 }
 ```
 
@@ -693,8 +716,10 @@ tests/Luban.IntegrationTests/TestData/json_schema_test/
 │   ├── skills.json         # 技能数据（含多态）
 │   └── objects.json        # 游戏对象数据（嵌套 Bean）
 └── output/
-    └── schema.json         # 生成的 JSON Schema
-
+    ├── schema.json              # 主 JSON Schema
+    ├── vscode-json-schemas.json # VSCode 配置
+    └── definitions/             # Wrapper schemas
+        └── *.schema.json
 ```
 
 ### 8.2 运行测试
@@ -855,7 +880,7 @@ if (schema['x-luban-flags']) {
 
 ### 11.2 性能优化
 
-1. **单文件输出** - 当前实现输出单个 schema.json，适合中小型项目
+1. **分层输出** - 主 schema 包含所有定义，wrapper schemas 按表分离到 definitions/ 目录
 2. **按需加载** - 在编辑器中可以按需加载特定表的 schema
 3. **缓存 schema** - 在编辑器中缓存已加载的 schema，避免重复请求
 
@@ -896,7 +921,7 @@ A: JSON 中所有 key 都是字符串，需要使用 propertyNames pattern 约�
 
 ### 13.1 计划功能
 
-- [ ] **分文件输出** - 支持将每个表的 schema 输出到单独文件
+- [x] **分文件输出** - 支持将每个表的 wrapper schema 输出到 definitions/ 目录
 - [ ] **JSON Schema 2020-12** - 升级到最新的 JSON Schema 规范
 - [ ] **UI Schema 生成** - 自动生成 react-jsonschema-form 的 uiSchema
 - [ ] **更多扩展属性** - 支持更多 Luban 特性（alias, group, tags）
@@ -941,13 +966,12 @@ Luban JSON Schema 输出功能已经完整实现，提供了从 Luban XML Schema
 
 - **测试覆盖** - 包含完整的集成测试，覆盖所有类型和特性
 - **代码质量** - 使用访问者模式，结构清晰，易于维护
-- **性能** - 单文件输出，适合中小型项目
+- **分层输出** - 主 schema + definitions/ 目录结构，支持 VSCode 智能提示
 - **扩展性** - 易于添加新的验证器和扩展属性
 
 ### 下一步
 
 该功能已经可以投入生产使用。未来可以考虑：
-- 支持分文件输出以优化大型项目
 - 升级到 JSON Schema 2020-12
 - 自动生成 UI Schema
 - 更多的扩展属性支持
