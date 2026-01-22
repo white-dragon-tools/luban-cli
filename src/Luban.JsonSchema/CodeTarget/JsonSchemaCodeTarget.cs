@@ -84,6 +84,13 @@ public class JsonSchemaCodeTarget : CodeTargetBase
             definitions[@enum.FullName] = GenerateEnumSchema(@enum);
         }
 
+        // Collect table value types for DataFile variant generation
+        var tableValueTypes = new HashSet<string>();
+        foreach (var table in ctx.ExportTables)
+        {
+            tableValueTypes.Add(table.ValueTType.DefBean.FullName);
+        }
+
         // Process beans
         foreach (var bean in ctx.ExportBeans)
         {
@@ -101,6 +108,12 @@ public class JsonSchemaCodeTarget : CodeTargetBase
             else if (bean.ParentDefType != null)
             {
                 // Concrete type with parent - generate file variant
+                var fileVariantName = $"{bean.FullName}DataFile";
+                definitions[fileVariantName] = GenerateFileVariantSchema(bean);
+            }
+            else if (tableValueTypes.Contains(bean.FullName))
+            {
+                // Simple bean used as table value type - generate file variant for wrapper schema
                 var fileVariantName = $"{bean.FullName}DataFile";
                 definitions[fileVariantName] = GenerateFileVariantSchema(bean);
             }
@@ -649,16 +662,19 @@ public class JsonSchemaCodeTarget : CodeTargetBase
 
         foreach (var (schemaFile, inputFiles) in wrapperInfos)
         {
-            var fileMatches = new JsonArray();
+            // Group input files by whether they need array schema (*@ prefix)
+            var objectFileMatches = new JsonArray();
+            var arrayFileMatches = new JsonArray();
 
             foreach (var inputFile in inputFiles)
             {
-                // Convert input file pattern to fileMatch pattern
                 var pattern = inputFile;
+                bool isArrayInput = false;
 
-                // Remove leading *@ prefix (Luban convention for JSON files)
+                // Check for *@ prefix (Luban convention for array JSON files)
                 if (pattern.StartsWith("*@"))
                 {
+                    isArrayInput = true;
                     pattern = pattern.Substring(2);
                 }
 
@@ -682,21 +698,53 @@ public class JsonSchemaCodeTarget : CodeTargetBase
                 }
 
                 // Add dataDir prefix if configured
-                // Format: configs/datas/xxx/**/*.json
                 if (!string.IsNullOrEmpty(dataDir))
                 {
                     pattern = dataDir.TrimEnd('/') + "/" + pattern;
                 }
 
-                fileMatches.Add(pattern);
+                if (isArrayInput)
+                {
+                    arrayFileMatches.Add(pattern);
+                }
+                else
+                {
+                    objectFileMatches.Add(pattern);
+                }
             }
 
-            if (fileMatches.Count > 0)
+            // Add schema entry for object files (direct reference to wrapper schema)
+            if (objectFileMatches.Count > 0)
             {
                 var schemaEntry = new JsonObject
                 {
-                    ["fileMatch"] = fileMatches,
+                    ["fileMatch"] = objectFileMatches,
                     ["url"] = $"{schemaDir}/definitions/{schemaFile}"
+                };
+                schemas.Add(schemaEntry);
+            }
+
+            // Add schema entry for array files (inline array schema with items reference)
+            if (arrayFileMatches.Count > 0)
+            {
+                // Extract the definition name from the wrapper schema file name
+                // e.g., "visual-data.schema.json" -> need to find the actual definition reference
+                var definitionRef = schemaFile.Replace(".schema.json", "");
+                // Convert kebab-case back to PascalCase for definition lookup
+                var parts = definitionRef.Split('-');
+                var pascalName = string.Join("", parts.Select(p => char.ToUpper(p[0]) + p.Substring(1)));
+
+                var schemaEntry = new JsonObject
+                {
+                    ["fileMatch"] = arrayFileMatches,
+                    ["schema"] = new JsonObject
+                    {
+                        ["type"] = "array",
+                        ["items"] = new JsonObject
+                        {
+                            ["$ref"] = $"{schemaDir}/definitions/{schemaFile}"
+                        }
+                    }
                 };
                 schemas.Add(schemaEntry);
             }

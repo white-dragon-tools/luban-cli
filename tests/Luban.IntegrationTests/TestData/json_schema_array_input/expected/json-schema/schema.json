@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "luban-schema",
+  "definitions": {
+    "ConfigData": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "key",
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
+    "ConfigDataDataFile": {
+      "type": "object",
+      "description": "Standalone file variant of ConfigData. Use this schema for files that contain only ConfigData data.",
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "description": "JSON Schema reference for editor intellisense"
+        },
+        "key": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "key",
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
+    "VisualData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "VisualDataDataFile": {
+      "type": "object",
+      "description": "Standalone file variant of VisualData. Use this schema for files that contain only VisualData data.",
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "description": "JSON Schema reference for editor intellisense"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "value"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "tables": {
+    "TbVisualData": {
+      "valueType": "VisualData",
+      "mode": "map",
+      "index": "id",
+      "inputFiles": [
+        "*@visual-data"
+      ]
+    },
+    "TbConfigData": {
+      "valueType": "ConfigData",
+      "mode": "map",
+      "index": "key",
+      "inputFiles": [
+        "config.json"
+      ]
+    }
+  }
+}

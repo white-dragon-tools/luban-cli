@@ -1,0 +1,21 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "visual-data/**/*.json"
+      ],
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "./configs/schema/definitions/visual-data.schema.json"
+        }
+      }
+    },
+    {
+      "fileMatch": [
+        "config.json"
+      ],
+      "url": "./configs/schema/definitions/config-data.schema.json"
+    }
+  ]
+}

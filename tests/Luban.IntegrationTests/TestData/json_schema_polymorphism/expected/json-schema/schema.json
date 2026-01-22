@@ -29,6 +29,38 @@
       ],
       "additionalProperties": false
     },
+    "SkillDataFile": {
+      "type": "object",
+      "description": "Standalone file variant of Skill. Use this schema for files that contain only Skill data.",
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "description": "JSON Schema reference for editor intellisense"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "effect": {
+          "$ref": "#/definitions/SkillEffect"
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SkillEffect"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "effect",
+        "effects"
+      ],
+      "additionalProperties": false
+    },
     "SkillEffect": {
       "type": "object",
       "properties": {

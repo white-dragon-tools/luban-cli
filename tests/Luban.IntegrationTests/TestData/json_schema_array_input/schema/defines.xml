@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- Simple bean for testing array input -->
+  <bean name="VisualData">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="value" type="float"/>
+  </bean>
+
+  <!-- Bean for testing object input (no *@ prefix) -->
+  <bean name="ConfigData">
+    <var name="key" type="string"/>
+    <var name="enabled" type="bool"/>
+  </bean>
+
+  <!-- Table with *@ prefix - expects array JSON input -->
+  <table name="TbVisualData" value="VisualData" input="*@visual-data"/>
+
+  <!-- Table without *@ prefix - expects object JSON input -->
+  <table name="TbConfigData" value="ConfigData" input="config.json"/>
+</root>

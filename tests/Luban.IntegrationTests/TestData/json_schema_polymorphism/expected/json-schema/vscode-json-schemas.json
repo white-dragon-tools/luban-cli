@@ -1,0 +1,15 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "skills.json"
+      ],
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "./configs/schema/definitions/skill.schema.json"
+        }
+      }
+    }
+  ]
+}
