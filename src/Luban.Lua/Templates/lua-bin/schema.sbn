@@ -88,7 +88,7 @@ local function InitTypes(methods, enableHotreload)
             local mt = { __index = function(self, key)
             {{~ for field in refFields ~}}
                 {{~ refInfo = get_ref_override_info field ~}}
-                {{~ if for.first ~}}    if{{~ else ~}}    elseif{{~ end }} key == "{{field.name}}" then
+                {{~ if for.first ~}}if{{~ else ~}}elseif{{~ end }} key == "{{field.name}}" then
                 {{~ if refInfo.is_collection ~}}
                     {{~ if refInfo.collection_type == "map" ~}}
                     local v = methods.readMapRef(bs.{{field.name}}, "{{refInfo.table_name}}"{{if refInfo.is_nullable}}, true{{end}})
