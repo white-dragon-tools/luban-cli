@@ -256,6 +256,53 @@ output/
 }
 ```
 
+**VSCode 配置文件 (vscode-json-schemas.json)**：
+
+自动生成的 VSCode json.schemas 配置，可合并到 `.vscode/settings.json`：
+
+```json
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["items/**/*.json"],
+      "url": "./configs/schema/definitions/item.schema.json"
+    }
+  ]
+}
+```
+
+**数组输入 (*@ 前缀)**：
+
+当表的 input 以 `*@` 开头时，表示 JSON 文件包含数组而非单个对象。生成的 VSCode 配置会使用内联数组 schema：
+
+```xml
+<!-- 数组输入：JSON 文件包含多条记录的数组 -->
+<table name="TbVisualData" value="VisualData" input="*@visual-data"/>
+```
+
+生成的 VSCode 配置：
+
+```json
+{
+  "fileMatch": ["visual-data/**/*.json"],
+  "schema": {
+    "type": "array",
+    "items": {
+      "$ref": "./configs/schema/definitions/visual-data.schema.json"
+    }
+  }
+}
+```
+
+对应的 JSON 数据格式：
+
+```json
+[
+  { "id": 1, "name": "Item1", "value": 1.5 },
+  { "id": 2, "name": "Item2", "value": 2.5 }
+]
+```
+
 ### 3.2 基础类型映射
 
 | Luban 类型 | JSON Schema |
