@@ -110,7 +110,65 @@ end
 
 **功能**: 验证引用字段指向的记录在其他表中存在。
 
-详见官方文档：https://www.datable.cn/docs/
+
+#### RefOverride 标签
+
+**功能**: 配合 `#ref` 验证器使用，在生成的 Lua schema 中自动将 ID 字段转换为引用对象。
+
+#### 使用场景
+当你希望在运行时直接获取引用的对象，而不是手动通过 ID 查找时使用。
+
+#### 配置方式
+在字段定义中同时添加 `#ref` 验证器和 `RefOverride=true` 标签：
+
+```xml
+<bean name="SkillConfig">
+    <var name="skillId" type="int"/>
+    <!-- 普通 ref：字段值保持为 ID -->
+    <var name="itemId" type="int#ref=TbItem"/>
+    <!-- RefOverride：字段值自动转换为引用对象 -->
+    <var name="weaponId" type="int#ref=TbWeapon" tags="RefOverride=true"/>
+    <!-- 可空引用 -->
+    <var name="optionalItemId" type="int#ref=TbItem?" tags="RefOverride=true"/>
+    <!-- 数组/列表元素引用 -->
+    <var name="itemIds" type="list,int#ref=TbItem" tags="RefOverride=true"/>
+    <!-- 字典值引用（key 的 #ref 会被忽略） -->
+    <var name="itemMap" type="map,int,int#ref=TbItem" tags="RefOverride=true"/>
+</bean>
+```
+
+#### 生成的 Lua 代码
+
+**普通 ref（无 RefOverride）**：
+```lua
+-- 字段值保持为原始 ID
+o.itemId = bs.itemId  -- 值为 int
+```
+
+**带 RefOverride**：
+```lua
+-- 非可空：直接调用 getRef
+o.weaponId = methods.getRef("TbWeapon", bs.weaponId)
+
+-- 可空：先检查值是否存在
+o.optionalItemId = bs.optionalItemId and methods.getRef("TbItem", bs.optionalItemId) or nil
+
+-- 数组/列表：对每个元素调用 getRef
+o.itemIds = methods.readListRef(bs.itemIds, "TbItem")
+
+-- 字典：对每个 value 调用 getRef（key 保持原样）
+o.itemMap = methods.readMapRef(bs.itemMap, "TbItem")
+```
+
+#### 限制
+- **只支持单表引用**：不支持 `#ref=TbItem,TbEquip` 多表引用
+- **只支持 map 表**：不支持 `#ref=field@TbListTable` 带索引的 list 表引用
+- 违反以上限制会在生成时报错
+
+#### 注意事项
+- `methods.getRef`、`methods.readListRef`、`methods.readMapRef` 函数需要在运行时环境中实现
+- 可空判断基于 `#ref=TbItem?` 语法或元素类型本身的可空性
+- 对于字典类型，只处理 value 的 `#ref`，key 的 `#ref` 会被忽略
 
 ---
 

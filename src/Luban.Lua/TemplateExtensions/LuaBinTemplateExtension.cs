@@ -18,10 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Luban.DataValidator.Builtin.Ref;
 using Luban.DataValidator.Builtin.Type;
 using Luban.Defs;
 using Luban.Lua.TypVisitors;
 using Luban.Types;
+using Luban.Utils;
 using Luban.Validator;
 using Scriban.Runtime;
 
@@ -96,5 +98,97 @@ public class LuaBinTemplateExtension : ScriptObject
             return nativeExpr;
         }
         return expr;
+    }
+
+    public static RefOverrideInfo GetRefOverrideInfo(DefField field)
+    {
+        if (!field.HasTag("RefOverride"))
+        {
+            return null;
+        }
+
+        TType targetType = field.CType;
+        bool isCollection = false;
+        string collectionType = null;
+
+        // Check if it's a collection type (array, list, set, map)
+        if (targetType is TArray arr)
+        {
+            targetType = arr.ElementType;
+            isCollection = true;
+            collectionType = "array";
+        }
+        else if (targetType is TList list)
+        {
+            targetType = list.ElementType;
+            isCollection = true;
+            collectionType = "list";
+        }
+        else if (targetType is TSet set)
+        {
+            targetType = set.ElementType;
+            isCollection = true;
+            collectionType = "set";
+        }
+        else if (targetType is TMap map)
+        {
+            // For map, only process value type, ignore key
+            targetType = map.ValueType;
+            isCollection = true;
+            collectionType = "map";
+        }
+
+        var refValidator = targetType.Validators.OfType<RefValidator>().FirstOrDefault();
+        if (refValidator == null)
+        {
+            throw new Exception($"field:'{field}' has RefOverride tag but no #ref validator on {(isCollection ? "element type" : "field")}");
+        }
+
+        var tables = DefUtil.TrimBracePairs(refValidator.Args).Split(',').Select(s => s.Trim()).ToList();
+        if (tables.Count > 1)
+        {
+            throw new Exception($"field:'{field}' RefOverride does not support multiple table references");
+        }
+
+        var refStr = tables[0];
+        bool ignoreDefault = refStr.EndsWith("?");
+        if (ignoreDefault)
+        {
+            refStr = refStr.Substring(0, refStr.Length - 1);
+        }
+
+        int sepIndex = refStr.IndexOf('@');
+        if (sepIndex >= 0)
+        {
+            throw new Exception($"field:'{field}' RefOverride does not support list table index references");
+        }
+
+        var assembly = field.Assembly;
+        var defTable = assembly.GetCfgTable(refStr);
+        if (defTable == null)
+        {
+            throw new Exception($"field:'{field}' RefOverride ref table '{refStr}' not found");
+        }
+
+        if (!defTable.IsMapTable)
+        {
+            throw new Exception($"field:'{field}' RefOverride only supports map tables, but '{refStr}' is not a map table");
+        }
+
+        return new RefOverrideInfo
+        {
+            TableName = defTable.FullName,
+            IsNullable = ignoreDefault || targetType.IsNullable,
+            IsCollection = isCollection,
+            CollectionType = collectionType
+        };
+    }
+
+    public class RefOverrideInfo
+    {
+        public string TableName { get; set; }
+        public bool IsNullable { get; set; }
+        public bool IsCollection { get; set; }
+        public string CollectionType { get; set; }
     }
 }

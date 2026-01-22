@@ -62,7 +62,20 @@ local function InitTypes(methods)
             if not bs then return nil end
             local o = table.clone(bs)
         {{~ for field in bean.hierarchy_export_fields ~}}
-            {{~if field.ctype.is_bean~}}
+            {{~refInfo = get_ref_override_info field~}}
+            {{~if refInfo~}}
+            {{~if refInfo.is_collection~}}
+            {{~if refInfo.collection_type == "map"~}}
+            o.{{field.name}} = methods.readMapRef(bs.{{field.name}}, "{{refInfo.table_name}}"{{if refInfo.is_nullable}}, true{{end}})
+            {{~else~}}
+            o.{{field.name}} = methods.readListRef(bs.{{field.name}}, "{{refInfo.table_name}}"{{if refInfo.is_nullable}}, true{{end}})
+            {{~end~}}
+            {{~else if refInfo.is_nullable~}}
+            o.{{field.name}} = bs.{{field.name}} and methods.getRef("{{refInfo.table_name}}", bs.{{field.name}}) or nil
+            {{~else~}}
+            o.{{field.name}} = methods.getRef("{{refInfo.table_name}}", bs.{{field.name}})
+            {{~end~}}
+            {{~else if field.ctype.is_bean~}}
             {{~if has_object_factory field~}}
             o.{{field.name}} = function() return {{deserialize ('bs.' + field.name) field.ctype field}} end
             {{~else~}}
