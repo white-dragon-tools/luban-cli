@@ -49,9 +49,13 @@ public class LuaBinCodeTarget : LuaCodeTargetBase
 
 export interface Methods{
     getClass:(beanName: string)=> unknown,
-    readList:(cfg:Record<string, unknown>[],deserializer:deserializer)=>object,
-    readSet:(cfg:object[],deserializer:deserializer)=>object,
-    readMap:(cfg:Record<string, unknown>,deserializer:deserializer)=>object
+    getRef:(tableName: string, id:unknown)=> unknown,
+    readList:(cfg:Array<unknown>,deserializer:deserializer)=>object,
+    readSet:(cfg:Set<unknown>,deserializer:deserializer)=>object,
+    readMap:(cfg:Record<string, unknown>,deserializer:deserializer)=>object,
+    readListRef:(tableName: string, cfg:Array<unknown>)=>object,
+    readMapRef:(tableName: string, cfg:Map<unknown, unknown>)=>object,
+    readSetRef:(tableName: string, cfg:Set<unknown>)=>object,
 }
 
 
