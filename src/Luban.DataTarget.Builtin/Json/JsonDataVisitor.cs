@@ -68,7 +68,15 @@ public class JsonDataVisitor : IDataActionVisitor<Utf8JsonWriter>
 
     public virtual void Accept(DEnum type, Utf8JsonWriter x)
     {
-        x.WriteNumberValue(type.Value);
+        if (type.Type.DefEnum.IsStringEnum)
+        {
+            var item = type.Type.DefEnum.Items.FirstOrDefault(i => i.IntValue == type.Value);
+            x.WriteStringValue(item?.Value ?? type.StrValue);
+        }
+        else
+        {
+            x.WriteNumberValue(type.Value);
+        }
     }
 
     public void Accept(DString type, Utf8JsonWriter x)

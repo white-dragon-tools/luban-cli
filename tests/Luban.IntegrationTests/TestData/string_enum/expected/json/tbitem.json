@@ -2,19 +2,19 @@
   {
     "id": 1,
     "name": "长剑",
-    "type": 0,
+    "type": "weapon",
     "rarity": 1
   },
   {
     "id": 2,
     "name": "皮甲",
-    "type": 1,
+    "type": "armor",
     "rarity": 2
   },
   {
     "id": 3,
     "name": "生命药水",
-    "type": 2,
+    "type": "consumable",
     "rarity": 1
   }
 ]
