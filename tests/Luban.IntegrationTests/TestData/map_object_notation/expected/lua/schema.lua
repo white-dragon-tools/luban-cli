@@ -29,7 +29,7 @@ local tables =
     { name='TbItemArray', file='tbitemarray', mode='map', index='id', value_type='ItemWithRequirements' },
 }
 
-local function InitTypes(methods)
+local function InitTypes(methods, enableHotreload)
     local readList = methods.readList
     local readArray = methods.readArray or readList
     local readSet = methods.readSet

@@ -32,7 +32,7 @@ local tables =
     { name='TbMixedSpawner', file='tbmixedspawner', mode='map', index='id', value_type='MixedSpawner' },
 }
 
-local function InitTypes(methods)
+local function InitTypes(methods, enableHotreload)
     local readList = methods.readList
     local readArray = methods.readArray or readList
     local readSet = methods.readSet

@@ -28,7 +28,7 @@ local tables =
     { name='TbSkill', file='tbskill', mode='map', index='id', value_type='SkillConfig' },
 }
 
-local function InitTypes(methods)
+local function InitTypes(methods, enableHotreload)
     local readList = methods.readList
     local readArray = methods.readArray or readList
     local readSet = methods.readSet

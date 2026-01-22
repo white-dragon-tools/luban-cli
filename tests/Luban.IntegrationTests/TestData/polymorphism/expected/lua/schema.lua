@@ -30,7 +30,7 @@ local tables =
     { name='TbQuest', file='tbquest', mode='map', index='id', value_type='Quest' },
 }
 
-local function InitTypes(methods)
+local function InitTypes(methods, enableHotreload)
     local readList = methods.readList
     local readArray = methods.readArray or readList
     local readSet = methods.readSet

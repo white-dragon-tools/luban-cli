@@ -73,7 +73,7 @@ export interface DeserializerBean   {
 }
 
 /** 初始化 */
-export function InitTypes(methods:Methods):{
+export function InitTypes(methods:Methods, enableHotreload?:boolean):{
     /** class 类 */
     beans: Map<string, DeserializerBean>,
 
