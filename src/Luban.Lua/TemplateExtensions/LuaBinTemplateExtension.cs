@@ -175,12 +175,15 @@ public class LuaBinTemplateExtension : ScriptObject
             throw new Exception($"field:'{field}' RefOverride only supports map tables, but '{refStr}' is not a map table");
         }
 
+        var signature = field.GetTag("RefOverride");
+
         return new RefOverrideInfo
         {
             TableName = defTable.FullName,
             IsNullable = ignoreDefault || targetType.IsNullable,
             IsCollection = isCollection,
-            CollectionType = collectionType
+            CollectionType = collectionType,
+            Signature = string.IsNullOrEmpty(signature) ? null : signature
         };
     }
 
@@ -190,5 +193,6 @@ public class LuaBinTemplateExtension : ScriptObject
         public bool IsNullable { get; set; }
         public bool IsCollection { get; set; }
         public string CollectionType { get; set; }
+        public string Signature { get; set; }
     }
 }
