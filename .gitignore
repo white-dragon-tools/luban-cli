@@ -13,6 +13,8 @@ ReaderLib/**/Config
 *.userprefs
 *.tgz
 
+.factory/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
