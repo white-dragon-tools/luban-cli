@@ -1,0 +1,26 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "assets.json"
+      ],
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "./configs/schema/definitions/asset-data.schema.json"
+        }
+      }
+    },
+    {
+      "fileMatch": [
+        "test.json"
+      ],
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "./configs/schema/definitions/test-map-ref.schema.json"
+        }
+      }
+    }
+  ]
+}

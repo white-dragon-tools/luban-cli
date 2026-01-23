@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 资产数据 -->
+  <bean name="AssetData">
+    <var name="id" type="int"/>
+    <var name="path" type="string"/>
+  </bean>
+
+  <!-- 测试 Map 类型的 ref 注解 -->
+  <bean name="TestMapRef">
+    <var name="id" type="int"/>
+    <!-- 普通字段的 ref -->
+    <var name="assetId" type="int#ref=TbAsset"/>
+    <!-- Map value 类型的 ref - 这是要测试的场景 -->
+    <var name="assets" type="map,string,int#ref=TbAsset"/>
+    <!-- List 元素类型的 ref -->
+    <var name="assetList" type="list,int#ref=TbAsset"/>
+    <!-- Array 元素类型的 ref -->
+    <var name="assetArray" type="array,int#ref=TbAsset"/>
+    <!-- Set 元素类型的 ref -->
+    <var name="assetSet" type="set,int#ref=TbAsset"/>
+  </bean>
+
+  <!-- 表定义 -->
+  <table name="TbAsset" value="AssetData" index="id" input="*@assets.json"/>
+  <table name="TbTestMapRef" value="TestMapRef" index="id" input="*@test.json"/>
+</root>

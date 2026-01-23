@@ -369,6 +369,40 @@ public class JsonSchemaCodeTarget : CodeTargetBase
                 ApplyValidatorTag(schema, tagName, tagValue, field.CType);
             }
         }
+
+        // For container types, apply element-level validators to the element schema
+        ApplyElementValidators(schema, field.CType);
+    }
+
+    private void ApplyElementValidators(JsonObject schema, Types.TType type)
+    {
+        Types.TType elementType = null;
+        JsonObject elementSchema = null;
+
+        if (type is Types.TMap mapType)
+        {
+            elementType = mapType.ValueType;
+            if (schema.TryGetPropertyValue("additionalProperties", out var addProps) && addProps is JsonObject addPropsObj)
+            {
+                elementSchema = addPropsObj;
+            }
+        }
+        else if (type is Types.TArray or Types.TList or Types.TSet)
+        {
+            elementType = type.ElementType;
+            if (schema.TryGetPropertyValue("items", out var items) && items is JsonObject itemsObj)
+            {
+                elementSchema = itemsObj;
+            }
+        }
+
+        if (elementType != null && elementSchema != null && elementType.Tags != null)
+        {
+            foreach (var (tagName, tagValue) in elementType.Tags)
+            {
+                ApplyValidatorTag(elementSchema, tagName, tagValue, elementType);
+            }
+        }
     }
 
     private void ApplyValidatorTag(JsonObject schema, string tagName, string tagValue, Types.TType type)

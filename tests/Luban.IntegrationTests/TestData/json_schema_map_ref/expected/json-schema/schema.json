@@ -1,0 +1,168 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "luban-schema",
+  "definitions": {
+    "AssetData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "path"
+      ],
+      "additionalProperties": false
+    },
+    "AssetDataDataFile": {
+      "type": "object",
+      "description": "Standalone file variant of AssetData. Use this schema for files that contain only AssetData data.",
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "description": "JSON Schema reference for editor intellisense"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "path"
+      ],
+      "additionalProperties": false
+    },
+    "TestMapRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "assetId": {
+          "type": "integer",
+          "x-luban-ref": "TbAsset"
+        },
+        "assets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "x-luban-ref": "TbAsset"
+          },
+          "x-luban-key-type": "string"
+        },
+        "assetList": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "x-luban-ref": "TbAsset"
+          }
+        },
+        "assetArray": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "x-luban-ref": "TbAsset"
+          }
+        },
+        "assetSet": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "x-luban-ref": "TbAsset"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "assetId",
+        "assets",
+        "assetList",
+        "assetArray",
+        "assetSet"
+      ],
+      "additionalProperties": false
+    },
+    "TestMapRefDataFile": {
+      "type": "object",
+      "description": "Standalone file variant of TestMapRef. Use this schema for files that contain only TestMapRef data.",
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "description": "JSON Schema reference for editor intellisense"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "assetId": {
+          "type": "integer",
+          "x-luban-ref": "TbAsset"
+        },
+        "assets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "x-luban-ref": "TbAsset"
+          },
+          "x-luban-key-type": "string"
+        },
+        "assetList": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "x-luban-ref": "TbAsset"
+          }
+        },
+        "assetArray": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "x-luban-ref": "TbAsset"
+          }
+        },
+        "assetSet": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "x-luban-ref": "TbAsset"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "assetId",
+        "assets",
+        "assetList",
+        "assetArray",
+        "assetSet"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "tables": {
+    "TbAsset": {
+      "valueType": "AssetData",
+      "mode": "map",
+      "index": "id",
+      "inputFiles": [
+        "*@assets.json"
+      ]
+    },
+    "TbTestMapRef": {
+      "valueType": "TestMapRef",
+      "mode": "map",
+      "index": "id",
+      "inputFiles": [
+        "*@test.json"
+      ]
+    }
+  }
+}
