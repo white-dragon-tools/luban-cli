@@ -1,12 +1,12 @@
 {
   "name": "@white-dragon-bevy/luban-cli",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "Luban - Game configuration solution",
   "bin": {
     "luban": "./bin/luban.js"
   },
   "scripts": {
-	  "dev:link-claude-to-droid:windows":"mklink /J .factory .claude",
+    "dev:link-claude-to-droid:windows": "mklink /J .factory .claude",
     "build": "cd src && dotnet build Luban.sln",
     "prepack": "npm run build",
     "luban": "dotnet src/Luban/bin/Release/net8.0/Luban.Core.dll",
