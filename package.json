@@ -40,12 +40,12 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/white-dragon-bevy/luban.git"
+    "url": "git+https://github.com/white-dragon-tools/luban-cli.git"
   },
   "bugs": {
-    "url": "https://github.com/white-dragon-bevy/luban/issues"
+    "url": "https://github.com/white-dragon-tools/luban-cli/issues"
   },
-  "homepage": "https://github.com/white-dragon-bevy/luban#readme",
+  "homepage": "https://github.com/white-dragon-tools/luban-cli#readme",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
