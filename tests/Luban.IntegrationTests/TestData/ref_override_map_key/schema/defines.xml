@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- Item definition -->
+  <bean name="Item">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+  </bean>
+
+  <!-- Inventory with map where key has #ref validator -->
+  <bean name="Inventory">
+    <var name="id" type="int"/>
+    <!-- Map with key referencing TbItem, value is quantity -->
+    <!-- RefOverride should NOT apply to the key, only to value if value had ref -->
+    <var name="items" type="map,int#ref=TbItem,int" tags="RefOverride"/>
+  </bean>
+
+  <table name="TbItem" value="Item" index="id" input="*@items.json"/>
+  <table name="TbInventory" value="Inventory" index="id" input="*@inventories.json"/>
+</root>

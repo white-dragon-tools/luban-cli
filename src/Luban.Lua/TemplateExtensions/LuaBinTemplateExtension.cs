@@ -141,6 +141,12 @@ public class LuaBinTemplateExtension : ScriptObject
         var refValidator = targetType.Validators.OfType<RefValidator>().FirstOrDefault();
         if (refValidator == null)
         {
+            // For map types, if value has no #ref validator, RefOverride should not apply
+            // (the key might have #ref for validation purposes only)
+            if (collectionType == "map")
+            {
+                return null;
+            }
             throw new Exception($"field:'{field}' has RefOverride tag but no #ref validator on {(isCollection ? "element type" : "field")}");
         }
 
