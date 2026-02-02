@@ -179,3 +179,8 @@ Environment options follow pattern: `{family}.{target}.{optionName}`
 - Official Documentation: https://www.datable.cn/
 - Example Projects: https://github.com/focus-creative-games/luban_examples
 - Discord: https://discord.gg/dGY4zzGMJ4
+
+## 版本发布
+- 提交所有变更
+- patch 版本+1
+- 提交 pr
