@@ -17,20 +17,28 @@ for test_case in class_method object_factory string_enum; do
         sed 's/^local ipairs = ipairs$/-- local ipairs = ipairs  -- Not used, commented out to satisfy Luau linter/' "$lua_file" > "$temp_file"
 
         # 2. Replace "local ctor = class.ctor" with rawget version
-        sed -i 's/local ctor = class\.ctor$/        -- Use rawget to safely check for ctor without triggering Luau type error\n        local ctor = rawget(class, '\''ctor'\'')/' "$temp_file"
+        # Use backslash-newline for portability (BSD sed on macOS does not support \n in replacement)
+        sed -i '' 's/local ctor = class\.ctor$/        -- Use rawget to safely check for ctor without triggering Luau type error\
+        local ctor = rawget(class, '\''ctor'\'')/' "$temp_file"
 
         # 3. Remove "local v" from readList and readSet functions
-        sed -i '/local function readList(bs, keyFun)/,/end/ { /^[[:space:]]*local v$/d }' "$temp_file"
-        sed -i '/local function readSet(bs, keyFun)/,/end/ { /^[[:space:]]*local v$/d }' "$temp_file"
+        sed -i '' '/local function readList(bs, keyFun)/,/end/ { /^[[:space:]]*local v$/d; }' "$temp_file"
+        sed -i '' '/local function readSet(bs, keyFun)/,/end/ { /^[[:space:]]*local v$/d; }' "$temp_file"
 
         # 4. Add else branch to readNullableBool
-        sed -i '/local function readNullableBool(bs)/,/end/ {
-            /if readBool(bs) then/,/end/ {
-                /return readBool(bs)/ {
-                    a\        else\n            return nil
-                }
-            }
-        }' "$temp_file"
+        # Use a temp script file for multi-line sed to ensure portability
+        sed_script=$(mktemp)
+        cat > "$sed_script" << 'SEDEOF'
+/local function readNullableBool(bs)/,/end/ {
+    /return readBool(bs)/ {
+        a\
+        else\
+            return nil
+    }
+}
+SEDEOF
+        sed -i '' -f "$sed_script" "$temp_file"
+        rm "$sed_script"
 
         # Copy the temp file back
         cp "$temp_file" "$lua_file"
